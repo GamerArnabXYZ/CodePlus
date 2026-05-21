@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CodePad</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#1c1c1e;
+  --surface:#242426;
+  --surface2:#2c2c2e;
+  --border:#38383a;
+  --border2:#48484a;
+  --text:#e5e5ea;
+  --text2:#aeaeb2;
+  --text3:#636366;
+  --accent:#0a84ff;
+  --accent-dim:rgba(10,132,255,.12);
+  --green:#30d158;
+  --red:#ff453a;
+  --orange:#ff9f0a;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
+  --radius:8px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh}
+
+/* ── TITLEBAR ── */
+.titlebar{
+  flex-shrink:0;height:48px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 14px;gap:10px;
+}
+.wdots{display:flex;gap:7px}
+.wd{width:12px;height:12px;border-radius:50%}
+.wd.r{background:#ff5f57}.wd.y{background:#febc2e}.wd.g{background:#28c840}
+.title-mid{flex:1;display:flex;justify-content:center}
+.title-text{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.3px}
+.save-badge{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:5px;
+  border:1px solid var(--border);background:var(--surface2);
+  font-size:10px;font-family:var(--mono);color:var(--text3);
+  transition:all .25s;
+}
+.save-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--text3);transition:all .25s}
+.save-badge.saved{border-color:rgba(48,209,88,.3);color:var(--green)}
+.save-badge.saved .dot{background:var(--green);box-shadow:0 0 5px var(--green)}
+.save-badge.unsaved{border-color:rgba(255,159,10,.3);color:var(--orange)}
+.save-badge.unsaved .dot{background:var(--orange);box-shadow:0 0 5px var(--orange)}
+
+/* ── TABS ── */
+.tabs{
+  flex-shrink:0;display:flex;align-items:stretch;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 10px;gap:2px;overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  display:flex;align-items:center;gap:6px;
+  padding:0 13px;height:36px;
+  font-size:12px;font-family:var(--mono);
+  color:var(--text3);cursor:pointer;white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:all .18s;
+}
+.tab i{font-size:11px}
+.tab:hover{color:var(--text2);background:rgba(255,255,255,.03)}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  flex-shrink:0;display:flex;gap:6px;
+  padding:8px 10px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;
+}
+.toolbar::-webkit-scrollbar{display:none}
+.tbtn{
+  display:flex;align-items:center;gap:7px;
+  padding:0 13px;height:32px;border-radius:6px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text2);font-family:var(--sans);font-size:12px;font-weight:500;
+  cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;
+}
+.tbtn i{font-size:12px;color:var(--text3)}
+.tbtn:hover{border-color:var(--border2);color:var(--text);background:rgba(255,255,255,.05)}
+.tbtn:active{transform:scale(.95);opacity:.8}
+
+/* ── SPEED BAR ── */
+.speed-bar{
+  flex-shrink:0;display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+.spd-label{
+  font-size:11px;font-family:var(--sans);font-weight:500;
+  color:var(--text3);display:flex;align-items:center;gap:5px;flex-shrink:0;
+}
+.spd-label i{font-size:10px;color:var(--accent)}
+input[type=range]{
+  flex:1;-webkit-appearance:none;appearance:none;
+  height:2px;background:var(--border2);border-radius:1px;outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--accent);cursor:pointer;
+  box-shadow:0 0 0 2px rgba(10,132,255,.25);
+}
+.spd-num{
+  font-size:11px;font-family:var(--mono);color:var(--accent);
+  min-width:16px;text-align:right;
+}
+.spd-presets{display:flex;gap:4px;flex-shrink:0}
+.spd-btn{
+  padding:3px 9px;border-radius:4px;
+  border:1px solid var(--border);background:var(--surface2);
+  font-size:10px;font-family:var(--sans);font-weight:500;
+  color:var(--text3);cursor:pointer;transition:all .15s;min-height:24px;
+}
+.spd-btn:active{transform:scale(.9)}
+.spd-btn.on{background:var(--accent-dim);border-color:rgba(10,132,255,.4);color:var(--accent)}
+
+/* ── EDITOR ── */
+.editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden}
+.gutter{
+  width:46px;flex-shrink:0;
+  background:var(--bg);border-right:1px solid var(--border);
+  padding-top:14px;overflow:hidden;user-select:none;pointer-events:none;
+}
+.ln{display:block;text-align:right;padding-right:10px;font-size:12px;line-height:23px;color:var(--text3);font-family:var(--mono);opacity:.6}
+textarea#code{
+  flex:1;background:var(--bg);color:var(--text);
+  font-family:var(--mono);font-size:13px;line-height:23px;
+  padding:14px 14px;border:none;outline:none;resize:none;
+  tab-size:2;caret-color:var(--accent);overflow:auto;white-space:pre;
+}
+textarea#code::placeholder{color:var(--text3);opacity:.5}
+textarea#code::selection{background:rgba(10,132,255,.25)}
+
+/* ── PREVIEW ── */
+.preview-wrap{
+  flex-shrink:0;overflow:hidden;
+  border-top:1px solid var(--border);background:#fff;
+  transition:height .3s ease;
+}
+.preview-wrap.open{height:38vh}
+.preview-wrap.shut{height:0}
+.preview-bar{
+  height:32px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 10px;gap:8px;
+}
+.pb-dots{display:flex;gap:5px}
+.pbd{width:8px;height:8px;border-radius:50%}
+.pbd.r{background:#ff5f57}.pbd.y{background:#febc2e}.pbd.g{background:#28c840}
+.pb-label{font-size:11px;color:var(--text3);font-family:var(--sans);flex:1;display:flex;align-items:center;gap:6px}
+.pb-label i{font-size:10px;color:var(--text3)}
+.pb-close{display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:4px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;transition:all .15s}
+.pb-close:hover{background:rgba(255,69,58,.15);color:var(--red)}
+#prvFrame{width:100%;height:calc(100% - 32px);border:none}
+
+/* ── STATUSBAR ── */
+.statusbar{
+  flex-shrink:0;height:24px;
+  background:#007aff;
+  display:flex;align-items:center;padding:0 10px;gap:14px;
+  font-size:10px;font-family:var(--sans);color:rgba(255,255,255,.85);
+}
+.sb{display:flex;align-items:center;gap:4px}
+.sb i{font-size:9px;opacity:.7}
+.sb-sp{flex:1}
+
+/* ── SHEET ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  backdrop-filter:blur(6px);z-index:900;
+  display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.overlay.show{opacity:1;pointer-events:all}
+.sheet{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border);border-radius:14px 14px 0 0;
+  padding:16px 16px 36px;
+  transform:translateY(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+}
+.overlay.show .sheet{transform:translateY(0)}
+.sheet-handle{width:32px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 18px}
+.sheet-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.sheet-title i{font-size:14px;color:var(--accent)}
+.sheet-sub{font-size:12px;color:var(--text3);margin-bottom:16px;line-height:1.5}
+.sheet-rows{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;display:flex;flex-direction:column;gap:9px}
+.srow{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text2)}
+.srow i{width:15px;text-align:center;font-size:12px;color:var(--accent);flex-shrink:0}
+.srow strong{color:var(--text)}
+.sheet-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.s-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:12px;border-radius:var(--radius);
+  border:1px solid var(--border);background:var(--surface2);
+  font-family:var(--sans);font-size:13px;font-weight:500;
+  color:var(--text2);cursor:pointer;transition:all .15s;min-height:44px;
+}
+.s-btn:active{transform:scale(.96)}
+.s-btn-go{background:var(--accent-dim);border-color:rgba(10,132,255,.4);color:var(--accent)}
+
+/* ── CONFIRM ── */
+.conf-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  backdrop-filter:blur(4px);z-index:1000;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.conf-bg.show{opacity:1;pointer-events:all}
+.conf{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:22px 18px 18px;width:100%;max-width:300px;
+  transform:scale(.94);transition:transform .25s cubic-bezier(.34,1.26,.64,1);
+}
+.conf-bg.show .conf{transform:scale(1)}
+.conf-icon{font-size:26px;color:var(--red);margin-bottom:10px}
+.conf-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:5px}
+.conf-msg{font-size:12px;color:var(--text3);line-height:1.55;margin-bottom:18px}
+.conf-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.c-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px;border-radius:var(--radius);border:1px solid var(--border);
+  font-family:var(--sans);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s;min-height:40px;
+}
+.c-btn:active{transform:scale(.95)}
+.c-no{background:var(--surface2);color:var(--text2)}
+.c-yes{background:rgba(255,69,58,.1);border-color:rgba(255,69,58,.35);color:var(--red)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:22px;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:6px;padding:9px 16px;
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;font-family:var(--sans);font-weight:500;color:var(--text);
+  z-index:2000;white-space:nowrap;
+  box-shadow:0 6px 24px rgba(0,0,0,.4);
+  transition:transform .3s cubic-bezier(.34,1.26,.64,1);
+}
+.toast.up{transform:translateX(-50%) translateY(0)}
+.t-green i{color:var(--green)}.t-red i{color:var(--red)}.t-orange i{color:var(--orange)}.t-blue i{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="wdots"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div></div>
+  <div class="title-mid"><span class="title-text">CodePad</span></div>
+  <div class="save-badge" id="saveBadge"><div class="dot"></div><span id="saveTxt">not saved</span></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active"><i class="fa-brands fa-html5"></i>index.html</div>
+  <div class="tab"><i class="fa-brands fa-css3-alt"></i>style.css</div>
+  <div class="tab"><i class="fa-brands fa-js"></i>script.js</div>
+  <div class="tab"><i class="fa-solid fa-file-code"></i>other</div>
+</div>
+
+<div class="toolbar">
+  <button class="tbtn" onclick="saveCode()"><i class="fa-solid fa-floppy-disk"></i>Save</button>
+  <button class="tbtn" onclick="askClear()"><i class="fa-solid fa-trash-can"></i>Clear</button>
+  <button class="tbtn" id="prvToggleBtn" onclick="togglePreview()"><i class="fa-solid fa-display" id="prvIco"></i><span id="prvLbl">Hide Preview</span></button>
+  <button class="tbtn" onclick="openSheet()"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto Write</button>
+</div>
+
+<div class="speed-bar">
+  <div class="spd-label"><i class="fa-solid fa-gauge-high"></i>Speed</div>
+  <input type="range" id="spd" min="1" max="10" value="5">
+  <span class="spd-num" id="spdNum">5</span>
+  <div class="spd-presets">
+    <button class="spd-btn" data-v="2">Slow</button>
+    <button class="spd-btn on" data-v="5">Mid</button>
+    <button class="spd-btn" data-v="8">Fast</button>
+    <button class="spd-btn" data-v="10">Max</button>
+  </div>
+</div>
+
+<div class="editor-wrap">
+  <div class="gutter" id="gutter"></div>
+  <textarea id="code" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off"
+    placeholder="<!-- start typing... -->"></textarea>
+</div>
+
+<div class="preview-wrap open" id="prvWrap">
+  <div class="preview-bar">
+    <div class="pb-dots"><div class="pbd r"></div><div class="pbd y"></div><div class="pbd g"></div></div>
+    <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
+    <button class="pb-close" onclick="closePreview()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <iframe id="prvFrame" sandbox="allow-scripts"></iframe>
+</div>
+
+<div class="statusbar">
+  <div class="sb"><i class="fa-solid fa-circle-dot"></i><span id="sbLang">HTML</span></div>
+  <div class="sb"><i class="fa-solid fa-text-width"></i><span id="sbCh">0</span></div>
+  <div class="sb-sp"></div>
+  <div class="sb"><i class="fa-solid fa-list-ol"></i><span id="sbLn">Ln 1</span></div>
+  <div class="sb"><i class="fa-solid fa-database"></i><span>LocalStorage</span></div>
+</div>
+
+<!-- SHEET -->
+<div class="overlay" id="overlay" onclick="bgClose(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto Write</div>
+    <div class="sheet-sub">Typing animation ke saath code present karo.</div>
+    <div class="sheet-rows">
+      <div class="srow"><i class="fa-solid fa-floppy-disk"></i><span>Pehle <strong>Save</strong> karo</span></div>
+      <div class="srow"><i class="fa-solid fa-gauge-high"></i><span>Speed yahan set karo — auto.html pe apply hogi</span></div>
+      <div class="srow"><i class="fa-solid fa-pause"></i><span>auto.html pe sirf <strong>Stop / Resume</strong> hoga</span></div>
+    </div>
+    <div class="sheet-btns">
+      <button class="s-btn" onclick="closeSheet()"><i class="fa-solid fa-xmark"></i>Cancel</button>
+      <button class="s-btn s-btn-go" onclick="launch()"><i class="fa-solid fa-rocket"></i>Launch</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="conf-bg" id="confBg">
+  <div class="conf">
+    <div class="conf-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="conf-title">Clear everything?</div>
+    <div class="conf-msg">Editor aur LocalStorage dono clear ho jayenge.</div>
+    <div class="conf-btns">
+      <button class="c-btn c-no" onclick="closeConf()"><i class="fa-solid fa-xmark"></i>Cancel</button>
+      <button class="c-btn c-yes" onclick="doClean()"><i class="fa-solid fa-trash-can"></i>Clear</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i id="tIco" class="fa-solid fa-circle-check"></i><span id="tMsg"></span></div>
+
+<script>
+const LS='codepad_v1', LSP='codepad_speed';
+const ta=document.getElementById('code'), gut=document.getElementById('gutter');
+let prvOpen=true;
+
+// INIT
+window.addEventListener('DOMContentLoaded',()=>{
+  const v=localStorage.getItem(LS)||'';
+  ta.value=v; v?setSaved():setUnsaved();
+  const s=localStorage.getItem(LSP)||'5';
+  document.getElementById('spd').value=s;
+  document.getElementById('spdNum').textContent=s;
+  syncBadges(+s); meta(); buildGut();
+  refreshPreview();
+});
+
+// TEXTAREA
+let asSave;
+ta.addEventListener('input',()=>{
+  setUnsaved(); meta(); buildGut();
+  clearTimeout(asSave);
+  asSave=setTimeout(()=>{localStorage.setItem(LS,ta.value);setSaved();refreshPreview();},1400);
+});
+ta.addEventListener('scroll',()=>{gut.scrollTop=ta.scrollTop});
+ta.addEventListener('keydown',e=>{
+  if(e.key==='Tab'){
+    e.preventDefault();
+    const s=ta.selectionStart,en=ta.selectionEnd;
+    ta.value=ta.value.slice(0,s)+'  '+ta.value.slice(en);
+    ta.selectionStart=ta.selectionEnd=s+2; setUnsaved();
+  }
+});
+
+// SPEED
+const sld=document.getElementById('spd');
+sld.addEventListener('input',()=>{
+  const v=sld.value;
+  document.getElementById('spdNum').textContent=v;
+  localStorage.setItem(LSP,v); syncBadges(+v);
+});
+document.querySelectorAll('.spd-btn').forEach(b=>b.addEventListener('click',()=>{
+  sld.value=b.dataset.v;
+  document.getElementById('spdNum').textContent=b.dataset.v;
+  localStorage.setItem(LSP,b.dataset.v); syncBadges(+b.dataset.v);
+}));
+function syncBadges(v){document.querySelectorAll('.spd-btn').forEach(b=>b.classList.toggle('on',+b.dataset.v===v));}
+
+function setSaved(){const p=document.getElementById('saveBadge');p.className='save-badge saved';document.getElementById('saveTxt').textContent='saved';}
+function setUnsaved(){const p=document.getElementById('saveBadge');p.className='save-badge unsaved';document.getElementById('saveTxt').textContent='unsaved';}
+function meta(){
+  const v=ta.value;
+  document.getElementById('sbCh').textContent=v.length;
+  const l=v?v.split('\n').length:1;
+  document.getElementById('sbLn').textContent='Ln '+l;
+}
+function buildGut(){
+  const l=ta.value?ta.value.split('\n').length:1;
+  gut.innerHTML=Array.from({length:l},(_,i)=>`<span class="ln">${i+1}</span>`).join('');
+}
+
+function saveCode(){localStorage.setItem(LS,ta.value);setSaved();refreshPreview();toast('fa-floppy-disk','Saved','t-green');}
+
+function askClear(){if(!ta.value.trim()){toast('fa-circle-info','Already empty','');return;}document.getElementById('confBg').classList.add('show');}
+function closeConf(){document.getElementById('confBg').classList.remove('show');}
+function doClean(){closeConf();ta.value='';localStorage.removeItem(LS);meta();buildGut();setUnsaved();refreshPreview();toast('fa-trash-can','Cleared','t-red');}
+
+function refreshPreview(){
+  if(!prvOpen)return;
+  const f=document.getElementById('prvFrame'),d=f.contentDocument||f.contentWindow.document;
+  d.open();d.write(ta.value);d.close();
+}
+function togglePreview(){prvOpen?closePreview():openPreview();}
+function openPreview(){
+  document.getElementById('prvWrap').className='preview-wrap open';prvOpen=true;
+  document.getElementById('prvIco').className='fa-solid fa-eye-slash';
+  document.getElementById('prvLbl').textContent='Hide Preview';
+  refreshPreview();
+}
+function closePreview(){
+  document.getElementById('prvWrap').className='preview-wrap shut';prvOpen=false;
+  document.getElementById('prvIco').className='fa-solid fa-display';
+  document.getElementById('prvLbl').textContent='Show Preview';
+}
+
+function openSheet(){document.getElementById('overlay').classList.add('show');}
+function closeSheet(){document.getElementById('overlay').classList.remove('show');}
+function bgClose(e){if(e.target===document.getElementById('overlay'))closeSheet();}
+function launch(){
+  if(!ta.value.trim()){closeSheet();toast('fa-triangle-exclamation','Koi code nahi!','t-orange');return;}
+  localStorage.setItem(LS,ta.value);setSaved();closeSheet();window.open('auto.html','_blank');
+}
+
+let tT;
+function toast(ico,msg,cls){
+  const el=document.getElementById('toast');
+  document.getElementById('tIco').className='fa-solid '+ico;
+  document.getElementById('tMsg').textContent=msg;
+  el.className='toast up'+(cls?' '+cls:'');
+  clearTimeout(tT);tT=setTimeout(()=>{el.className='toast';},2400);
+}
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('sbLang').textContent=t.textContent.trim();
+}));
+</script>
+</body>
+</html>

@@ -183,7 +183,7 @@ pre#out{
     <div class="pb-dots"><div class="pbd r"></div><div class="pbd y"></div><div class="pbd g"></div></div>
     <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
   </div>
-  <iframe id="prvFrame" sandbox="allow-scripts"></iframe>
+  <iframe id="prvFrame"></iframe>
 </div>
 
 <div class="statusbar">
@@ -272,8 +272,11 @@ function buildGut(n){
 }
 
 function renderPreview(html){
-  const f=document.getElementById('prvFrame'),d=f.contentDocument||f.contentWindow.document;
-  d.open();d.write(html);d.close();
+  const f = document.getElementById('prvFrame');
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  f.onload = () => URL.revokeObjectURL(url);
+  f.src = url;
 }
 
 cs.addEventListener('scroll',()=>{gut.scrollTop=cs.scrollTop;});

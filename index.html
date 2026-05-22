@@ -301,7 +301,7 @@ textarea#code::selection{background:rgba(10,132,255,.25)}
     <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
     <button class="pb-close" onclick="closePreview()"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <iframe id="prvFrame" sandbox="allow-scripts"></iframe>
+  <iframe id="prvFrame"></iframe>
 </div>
 
 <div class="statusbar">
@@ -412,9 +412,12 @@ function closeConf(){document.getElementById('confBg').classList.remove('show');
 function doClean(){closeConf();ta.value='';localStorage.removeItem(LS);meta();buildGut();setUnsaved();refreshPreview();toast('fa-trash-can','Cleared','t-red');}
 
 function refreshPreview(){
-  if(!prvOpen)return;
-  const f=document.getElementById('prvFrame'),d=f.contentDocument||f.contentWindow.document;
-  d.open();d.write(ta.value);d.close();
+  if(!prvOpen) return;
+  const f = document.getElementById('prvFrame');
+  const blob = new Blob([ta.value], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  f.onload = () => URL.revokeObjectURL(url);
+  f.src = url;
 }
 function togglePreview(){prvOpen?closePreview():openPreview();}
 function openPreview(){

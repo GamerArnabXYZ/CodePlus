@@ -183,7 +183,7 @@ pre#out{
     <div class="pb-dots"><div class="pbd r"></div><div class="pbd y"></div><div class="pbd g"></div></div>
     <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
   </div>
-  <iframe id="prvFrame"></iframe>
+  <iframe id="prvFrame" sandbox="allow-scripts allow-same-origin"></iframe>
 </div>
 
 <div class="statusbar">
@@ -234,7 +234,10 @@ function tick(){
   out.appendChild(cur);
   idx++;
   cur.scrollIntoView({block:'nearest',behavior:'auto'});
-  if(code[idx-1]==='\n'){const l=(code.slice(0,idx).match(/\n/g)||[]).length+1;buildGut(l);}
+  const ch=code[idx-1];
+  if(ch==='\n'){const l=(code.slice(0,idx).match(/\n/g)||[]).length+1;buildGut(l);}
+  // live preview: update on every closing tag or every 80 chars
+  if(ch==='>' || idx%80===0) renderPreview(code.slice(0,idx));
   updateSb();
 }
 
@@ -272,11 +275,7 @@ function buildGut(n){
 }
 
 function renderPreview(html){
-  const f = document.getElementById('prvFrame');
-  const blob = new Blob([html], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  f.onload = () => URL.revokeObjectURL(url);
-  f.src = url;
+  document.getElementById('prvFrame').srcdoc = html || '';
 }
 
 cs.addEventListener('scroll',()=>{gut.scrollTop=cs.scrollTop;});

@@ -301,7 +301,7 @@ textarea#code::selection{background:rgba(10,132,255,.25)}
     <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
     <button class="pb-close" onclick="closePreview()"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <iframe id="prvFrame"></iframe>
+  <iframe id="prvFrame" sandbox="allow-scripts allow-same-origin"></iframe>
 </div>
 
 <div class="statusbar">
@@ -365,8 +365,9 @@ window.addEventListener('DOMContentLoaded',()=>{
 let asSave;
 ta.addEventListener('input',()=>{
   setUnsaved(); meta(); buildGut();
+  refreshPreview();
   clearTimeout(asSave);
-  asSave=setTimeout(()=>{localStorage.setItem(LS,ta.value);setSaved();refreshPreview();},1400);
+  asSave=setTimeout(()=>{localStorage.setItem(LS,ta.value);setSaved();},1400);
 });
 ta.addEventListener('scroll',()=>{gut.scrollTop=ta.scrollTop});
 ta.addEventListener('keydown',e=>{
@@ -413,11 +414,7 @@ function doClean(){closeConf();ta.value='';localStorage.removeItem(LS);meta();bu
 
 function refreshPreview(){
   if(!prvOpen) return;
-  const f = document.getElementById('prvFrame');
-  const blob = new Blob([ta.value], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  f.onload = () => URL.revokeObjectURL(url);
-  f.src = url;
+  document.getElementById('prvFrame').srcdoc = ta.value || '';
 }
 function togglePreview(){prvOpen?closePreview():openPreview();}
 function openPreview(){

@@ -9,104 +9,105 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#1c1c1e;
-  --surface:#242426;
-  --surface2:#2c2c2e;
-  --border:#38383a;
-  --border2:#48484a;
-  --text:#e5e5ea;
-  --text2:#aeaeb2;
-  --text3:#636366;
-  --accent:#0a84ff;
-  --accent-dim:rgba(10,132,255,.12);
-  --green:#30d158;
-  --red:#ff453a;
-  --orange:#ff9f0a;
-  --mono:'JetBrains Mono',monospace;
-  --sans:'Inter',sans-serif;
-  --radius:8px;
+  --bg:#1c1c1e;--surface:#242426;--surface2:#2c2c2e;
+  --border:#38383a;--border2:#48484a;
+  --text:#e5e5ea;--text2:#aeaeb2;--text3:#636366;
+  --accent:#0a84ff;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;--radius:8px;
 }
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh}
+
+/* ── FRAME WRAPPER ── */
+html,body{height:100%;overflow:hidden;background:#000}
+body{display:flex;align-items:center;justify-content:center;font-family:var(--sans)}
+
+/* The resizable frame — default full viewport */
+#frame{
+  background:var(--bg);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  /* size set by JS from URL params */
+  width:100vw;height:100vh;
+  /* shadow when in windowed mode */
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 24px 60px rgba(0,0,0,.7);
+  transition:border-radius .2s;
+}
+body.windowed{background:#111}
+body.windowed #frame{border-radius:12px}
 
 /* ── TITLEBAR ── */
 .titlebar{
-  flex-shrink:0;height:48px;
-  background:var(--surface);border-bottom:1px solid var(--border);
+  flex-shrink:0;height:48px;background:var(--surface);
+  border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 14px;gap:10px;
 }
 .wdots{display:flex;gap:7px}
 .wd{width:12px;height:12px;border-radius:50%}
 .wd.r{background:#ff5f57}.wd.y{background:#febc2e}.wd.g{background:#28c840}
 .title-mid{flex:1;display:flex;justify-content:center}
-.title-text{font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.3px;font-family:var(--sans)}
+.title-text{font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.3px}
 
-/* Stop/Resume — small pill, top right */
-.ctrl{
-  display:flex;align-items:center;gap:6px;
-  padding:5px 11px;border-radius:5px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--text3);font-family:var(--sans);font-size:11px;font-weight:500;
-  cursor:pointer;transition:all .18s;min-height:28px;
+/* ratio badge — shows current format */
+.ratio-badge{
+  font-size:10px;font-family:var(--mono);color:var(--text3);
+  padding:3px 8px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface2);letter-spacing:.3px;
 }
-.ctrl i{font-size:10px;transition:color .18s}
+
+.ctrl{
+  display:flex;align-items:center;gap:6px;padding:5px 11px;
+  border-radius:5px;border:1px solid var(--border);background:var(--surface2);
+  color:var(--text3);font-size:11px;font-weight:500;cursor:pointer;
+  transition:all .18s;min-height:28px;font-family:var(--sans);
+}
+.ctrl i{font-size:10px}
 .ctrl:active{transform:scale(.93)}
-.ctrl .cdot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:all .25s}
+.cdot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:all .25s}
 .ctrl.running{border-color:rgba(48,209,88,.3);color:var(--green)}
-.ctrl.running i{color:var(--green)}
+.ctrl.running i,.ctrl.running{color:var(--green)}
 .ctrl.running .cdot{background:var(--green);box-shadow:0 0 5px var(--green);animation:blink 1s ease-in-out infinite}
 .ctrl.paused{border-color:rgba(255,159,10,.3);color:var(--orange)}
-.ctrl.paused i{color:var(--orange)}
 .ctrl.paused .cdot{background:var(--orange);animation:none}
 .ctrl.done{border-color:rgba(48,209,88,.3);color:var(--green)}
-.ctrl.done i{color:var(--green)}
 .ctrl.done .cdot{background:var(--green);animation:none}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
 /* ── TABS ── */
 .tabs{
   flex-shrink:0;display:flex;align-items:stretch;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 10px;
+  background:var(--surface);border-bottom:1px solid var(--border);padding:0 10px;
 }
 .tab{
-  display:flex;align-items:center;gap:6px;
-  padding:0 13px;height:36px;
-  font-size:12px;font-family:var(--mono);
-  color:var(--text2);border-bottom:2px solid var(--accent);
+  display:flex;align-items:center;gap:6px;padding:0 13px;height:36px;
+  font-size:12px;font-family:var(--mono);color:var(--text2);
+  border-bottom:2px solid var(--accent);
 }
 .tab i{font-size:11px;color:var(--orange)}
 
 /* ── EDITOR ── */
 .editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden}
 .gutter{
-  width:46px;flex-shrink:0;
-  background:var(--bg);border-right:1px solid var(--border);
-  padding-top:14px;overflow:hidden;user-select:none;pointer-events:none;
+  width:46px;flex-shrink:0;background:var(--bg);
+  border-right:1px solid var(--border);padding-top:14px;
+  overflow:hidden;user-select:none;pointer-events:none;
 }
 .ln{display:block;text-align:right;padding-right:10px;font-size:12px;line-height:23px;color:var(--text3);font-family:var(--mono);opacity:.6}
 .code-scroll{flex:1;overflow-y:auto;overflow-x:auto;padding:14px 14px 60px;background:var(--bg)}
-pre#out{
-  font-family:var(--mono);font-size:13px;line-height:23px;
-  color:var(--text);white-space:pre;tab-size:2;min-height:100%;
-}
-
-/* blinking text cursor — same as a real editor */
-.cur{
-  display:inline-block;width:2px;height:1em;
-  background:var(--text2);vertical-align:text-bottom;
-  animation:cur 1s step-start infinite;
-}
+pre#out{font-family:var(--mono);font-size:13px;line-height:23px;color:var(--text);white-space:pre;tab-size:2;min-height:100%}
+.cur{display:inline-block;width:2px;height:1em;background:var(--text2);vertical-align:text-bottom;animation:cur 1s step-start infinite}
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
 /* ── PREVIEW ── */
 .preview-wrap{
-  flex-shrink:0;overflow:hidden;
-  border-top:1px solid var(--border);background:#fff;
-  transition:height .3s ease;
+  flex-shrink:0;overflow:hidden;border-top:1px solid var(--border);
+  background:#fff;transition:height .3s ease;
 }
 .preview-wrap.open{height:38vh}
 .preview-wrap.shut{height:0}
+/* In full-preview mode the editor collapses and preview takes all space */
+#frame.preview-full .editor-wrap{display:none}
+#frame.preview-full .tabs{display:none}
+#frame.preview-full .preview-wrap.open{height:calc(100% - 48px - 24px)}
+
 .preview-bar{
   height:32px;background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 10px;gap:8px;
@@ -120,8 +121,7 @@ pre#out{
 
 /* ── STATUSBAR ── */
 .statusbar{
-  flex-shrink:0;height:24px;
-  background:#007aff;
+  flex-shrink:0;height:24px;background:#007aff;
   display:flex;align-items:center;padding:0 10px;gap:14px;
   font-size:10px;font-family:var(--sans);color:rgba(255,255,255,.85);
 }
@@ -130,69 +130,63 @@ pre#out{
 .sb-sp{flex:1}
 
 /* ── EMPTY ── */
-.empty{
-  display:none;flex-direction:column;align-items:center;
-  justify-content:center;height:100%;gap:12px;
-  color:var(--text3);text-align:center;padding:40px 24px;
-}
+.empty{display:none;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text3);text-align:center;padding:40px 24px}
 .empty.show{display:flex}
 .empty i.big{font-size:32px;opacity:.2}
 .empty-h{font-size:15px;font-weight:600;color:var(--text2);opacity:.4}
 .empty-p{font-size:12px;line-height:1.6;opacity:.5}
-.back-a{
-  margin-top:6px;display:inline-flex;align-items:center;gap:7px;
-  padding:10px 16px;border-radius:var(--radius);
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--text2);font-family:var(--sans);font-size:12px;font-weight:500;
-  text-decoration:none;transition:all .15s;
-}
+.back-a{margin-top:6px;display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-family:var(--sans);font-size:12px;font-weight:500;text-decoration:none;transition:all .15s}
 .back-a:active{transform:scale(.95)}
 </style>
 </head>
 <body>
+<div id="frame">
 
-<div class="titlebar">
-  <div class="wdots"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div></div>
-  <div class="title-mid"><span class="title-text">CodePad</span></div>
-  <button class="ctrl" id="ctrl" onclick="toggle()">
-    <div class="cdot"></div>
-    <i class="fa-solid fa-pause" id="ctrlIco"></i>
-    <span id="ctrlLbl">idle</span>
-  </button>
-</div>
+  <div class="titlebar">
+    <div class="wdots"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div></div>
+    <div class="title-mid"><span class="title-text">CodePad</span></div>
+    <span class="ratio-badge" id="ratioBadge">fullscreen</span>
+    <button class="ctrl" id="ctrl" onclick="toggle()">
+      <div class="cdot"></div>
+      <i class="fa-solid fa-pause" id="ctrlIco"></i>
+      <span id="ctrlLbl">idle</span>
+    </button>
+  </div>
 
-<div class="tabs">
-  <div class="tab"><i class="fa-brands fa-html5"></i><span id="fname">index.html</span></div>
-</div>
+  <div class="tabs">
+    <div class="tab"><i class="fa-brands fa-html5"></i><span id="fname">index.html</span></div>
+  </div>
 
-<div class="editor-wrap">
-  <div class="gutter" id="gutter"></div>
-  <div class="code-scroll" id="cs">
-    <div class="empty show" id="empty">
-      <i class="fa-solid fa-code big"></i>
-      <div class="empty-h">No code found</div>
-      <div class="empty-p">index.html pe code likho aur save karo</div>
-      <a class="back-a" href="index.html"><i class="fa-solid fa-arrow-left"></i>Back to editor</a>
+  <div class="editor-wrap">
+    <div class="gutter" id="gutter"></div>
+    <div class="code-scroll" id="cs">
+      <div class="empty show" id="empty">
+        <i class="fa-solid fa-code big"></i>
+        <div class="empty-h">No code found</div>
+        <div class="empty-p">index.html pe code likho aur save karo</div>
+        <a class="back-a" href="index.html"><i class="fa-solid fa-arrow-left"></i>Back to editor</a>
+      </div>
+      <pre id="out" style="display:none"></pre>
     </div>
-    <pre id="out" style="display:none"></pre>
   </div>
-</div>
 
-<div class="preview-wrap open" id="prvWrap">
-  <div class="preview-bar">
-    <div class="pb-dots"><div class="pbd r"></div><div class="pbd y"></div><div class="pbd g"></div></div>
-    <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
+  <div class="preview-wrap open" id="prvWrap">
+    <div class="preview-bar">
+      <div class="pb-dots"><div class="pbd r"></div><div class="pbd y"></div><div class="pbd g"></div></div>
+      <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
+    </div>
+    <iframe id="prvFrame" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
-  <iframe id="prvFrame" sandbox="allow-scripts allow-same-origin"></iframe>
-</div>
 
-<div class="statusbar">
-  <div class="sb"><i class="fa-solid fa-circle-dot"></i><span id="sbSt">Idle</span></div>
-  <div class="sb"><i class="fa-solid fa-list-ol"></i><span id="sbLn">Ln 1</span></div>
-  <div class="sb-sp"></div>
-  <div class="sb"><i class="fa-solid fa-keyboard"></i><span id="sbIdx">0</span>/<span id="sbTot">0</span></div>
-  <div class="sb"><span id="sbPct">0%</span></div>
-</div>
+  <div class="statusbar">
+    <div class="sb"><i class="fa-solid fa-circle-dot"></i><span id="sbSt">Idle</span></div>
+    <div class="sb"><i class="fa-solid fa-list-ol"></i><span id="sbLn">Ln 1</span></div>
+    <div class="sb-sp"></div>
+    <div class="sb"><i class="fa-solid fa-keyboard"></i><span id="sbIdx">0</span>/<span id="sbTot">0</span></div>
+    <div class="sb"><span id="sbPct">0%</span></div>
+  </div>
+
+</div><!-- #frame -->
 
 <script>
 const LS='codepad_v1', LSP='codepad_speed';
@@ -200,11 +194,107 @@ let code='',idx=0,running=false,paused=false,timer=null;
 const out=document.getElementById('out');
 const gut=document.getElementById('gutter');
 const cs=document.getElementById('cs');
+const frame=document.getElementById('frame');
 const cur=document.createElement('span'); cur.className='cur';
 const delays=[140,95,65,45,30,20,12,7,4,2];
 function delay(){const s=parseInt(localStorage.getItem(LSP)||'5');return delays[Math.min(Math.max(s,1),10)-1];}
 
+/* ── FORMAT PRESETS ──
+   Each entry: [width, height, label]
+   Aspect ratios get scaled to fit viewport while maintaining ratio.
+*/
+const FORMATS = {
+  // Social video formats
+  'ytshort':   [1080,1920,'YT Short'],
+  'tiktok':    [1080,1920,'TikTok'],
+  'reel':      [1080,1920,'Reel'],
+  'story':     [1080,1920,'Story'],
+  'yt':        [1920,1080,'YouTube'],
+  'youtube':   [1920,1080,'YouTube'],
+  'landscape': [1920,1080,'Landscape'],
+  'square':    [1080,1080,'Square'],
+  'twitter':   [1200,675,'Twitter'],
+  'tweet':     [1200,675,'Twitter'],
+  'linkedin':  [1200,627,'LinkedIn'],
+  'pinterest': [1000,1500,'Pinterest'],
+  // Generic sizes
+  'mobile':    [390,844,'Mobile'],
+  'tablet':    [768,1024,'Tablet'],
+  'desktop':   [1440,900,'Desktop'],
+};
+
+function parseParams(){
+  const p = new URLSearchParams(location.search);
+  const vw = window.innerWidth, vh = window.innerHeight;
+
+  // ?format=ytshort  or  ?format=tiktok  etc.
+  const fmt = p.get('format');
+  if(fmt){
+    const key = fmt.toLowerCase();
+    if(FORMATS[key]){
+      const [fw,fh,label] = FORMATS[key];
+      applySize(fw,fh,label,vw,vh);
+      return;
+    }
+  }
+
+  // ?ratio=9:16  or  ?ratio=16:9  etc.
+  const ratio = p.get('ratio');
+  if(ratio){
+    const parts = ratio.split(':');
+    if(parts.length===2){
+      const rw=parseFloat(parts[0]), rh=parseFloat(parts[1]);
+      if(rw>0&&rh>0){
+        applySize(rw*100, rh*100, ratio, vw, vh);
+        return;
+      }
+    }
+  }
+
+  // ?px=1080x1920  or  ?px=390x844
+  const px = p.get('px');
+  if(px){
+    const parts = px.toLowerCase().split('x');
+    if(parts.length===2){
+      const pw=parseInt(parts[0]), ph=parseInt(parts[1]);
+      if(pw>0&&ph>0){
+        applySize(pw, ph, pw+'×'+ph, vw, vh);
+        return;
+      }
+    }
+  }
+
+  // No params — fullscreen
+  frame.style.width='100vw';
+  frame.style.height='100vh';
+  frame.style.borderRadius='0';
+  document.getElementById('ratioBadge').textContent='fullscreen';
+  document.body.classList.remove('windowed');
+}
+
+function applySize(logicalW, logicalH, label, vw, vh){
+  // Scale to fit inside viewport while keeping aspect ratio
+  const scaleW = vw / logicalW;
+  const scaleH = vh / logicalH;
+  const scale  = Math.min(scaleW, scaleH, 1); // never upscale beyond natural size
+
+  const finalW = Math.round(logicalW * scale);
+  const finalH = Math.round(logicalH * scale);
+
+  frame.style.width  = finalW + 'px';
+  frame.style.height = finalH + 'px';
+  document.getElementById('ratioBadge').textContent = label;
+  document.body.classList.add('windowed');
+
+  // If very tall (portrait), preview full-screen mode looks better
+  if(logicalH > logicalW * 1.3){
+    frame.classList.add('preview-full');
+  }
+}
+
+// ── INIT ──
 window.addEventListener('DOMContentLoaded',()=>{
+  parseParams();
   code=localStorage.getItem(LS)||'';
   document.getElementById('sbTot').textContent=code.length;
   if(code){
@@ -216,6 +306,9 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
 });
 
+window.addEventListener('resize', parseParams);
+
+// ── TYPING ──
 function startTyping(){
   if(running||!code)return;
   running=true;paused=false;setState('running');
@@ -236,18 +329,14 @@ function tick(){
   cur.scrollIntoView({block:'nearest',behavior:'auto'});
   const ch=code[idx-1];
   if(ch==='\n'){const l=(code.slice(0,idx).match(/\n/g)||[]).length+1;buildGut(l);}
-  // live preview: update on every closing tag or every 80 chars
-  if(ch==='>' || idx%80===0) renderPreview(code.slice(0,idx));
+  if(ch==='>'||idx%80===0) renderPreview(code.slice(0,idx));
   updateSb();
 }
 
 function toggle(){
   if(!running&&!paused){startTyping();return;}
-  if(!paused){
-    paused=true;clearInterval(timer);timer=null;setState('paused');
-  } else {
-    paused=false;running=true;setState('running');timer=setInterval(tick,delay());
-  }
+  if(!paused){paused=true;clearInterval(timer);timer=null;setState('paused');}
+  else{paused=false;running=true;setState('running');timer=setInterval(tick,delay());}
 }
 
 function setState(s){
@@ -275,7 +364,7 @@ function buildGut(n){
 }
 
 function renderPreview(html){
-  document.getElementById('prvFrame').srcdoc = html || '';
+  document.getElementById('prvFrame').srcdoc=html||'';
 }
 
 cs.addEventListener('scroll',()=>{gut.scrollTop=cs.scrollTop;});

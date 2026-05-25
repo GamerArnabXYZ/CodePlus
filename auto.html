@@ -9,93 +9,103 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#1c1c1e;
-  --surface:#242426;
-  --surface2:#2c2c2e;
-  --border:#38383a;
-  --border2:#48484a;
-  --text:#e5e5ea;
-  --text2:#aeaeb2;
-  --text3:#636366;
-  --accent:#0a84ff;
-  --accent-dim:rgba(10,132,255,.12);
+  --bg:#0f0f10;
+  --surface:#161618;
+  --surface2:#1c1c1e;
+  --surface3:#252528;
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.15);
+  --text:#f5f5f7;
+  --text2:#a1a1a6;
+  --text3:#6e6e73;
+  --accent:#0071e3;
+  --accent-dim:rgba(0,113,227,0.15);
   --green:#30d158;
   --red:#ff453a;
   --orange:#ff9f0a;
   --mono:'JetBrains Mono',monospace;
-  --sans:'Inter',sans-serif;
-  --radius:8px;
+  --sans:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
+  --radius:10px;
 }
-html,body{height:100%;overflow:hidden}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--border2)}
 
 /* ── TITLEBAR ── */
 .titlebar{
-  flex-shrink:0;height:48px;
+  flex-shrink:0;height:52px;
   background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 14px;gap:10px;
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+  backdrop-filter:blur(20px);
 }
-.wdots{display:flex;gap:7px}
-.wd{width:12px;height:12px;border-radius:50%}
+.wdots{display:flex;gap:8px}
+.wd{width:12px;height:12px;border-radius:50%;opacity:0.8}
 .wd.r{background:#ff5f57}.wd.y{background:#febc2e}.wd.g{background:#28c840}
 .title-mid{flex:1;display:flex;justify-content:center}
-.title-text{font-size:13px;font-weight:600;color:var(--text3);letter-spacing:.3px;font-family:var(--sans)}
+.title-text{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:0.5px;text-transform:uppercase;opacity:0.7}
 
 /* Stop/Resume — small pill, top right */
 .ctrl{
-  display:flex;align-items:center;gap:6px;
-  padding:5px 11px;border-radius:5px;
+  display:flex;align-items:center;gap:8px;
+  padding:5px 14px;border-radius:20px;
   border:1px solid var(--border);background:var(--surface2);
-  color:var(--text3);font-family:var(--sans);font-size:11px;font-weight:500;
-  cursor:pointer;transition:all .18s;min-height:28px;
+  color:var(--text2);font-size:11px;font-weight:600;
+  cursor:pointer;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);min-height:30px;
 }
-.ctrl i{font-size:10px;transition:color .18s}
-.ctrl:active{transform:scale(.93)}
-.ctrl .cdot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:all .25s}
-.ctrl.running{border-color:rgba(48,209,88,.3);color:var(--green)}
+.ctrl i{font-size:10px;transition:color 0.18s}
+.ctrl:active{transform:scale(0.95)}
+.ctrl .cdot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;transition:all 0.25s}
+.ctrl.running{border-color:rgba(48,209,88,0.2);color:var(--green);background:rgba(48,209,88,0.05)}
 .ctrl.running i{color:var(--green)}
-.ctrl.running .cdot{background:var(--green);box-shadow:0 0 5px var(--green);animation:blink 1s ease-in-out infinite}
-.ctrl.paused{border-color:rgba(255,159,10,.3);color:var(--orange)}
+.ctrl.running .cdot{background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 1s ease-in-out infinite}
+.ctrl.paused{border-color:rgba(255,159,10,0.2);color:var(--orange);background:rgba(255,159,10,0.05)}
 .ctrl.paused i{color:var(--orange)}
 .ctrl.paused .cdot{background:var(--orange);animation:none}
-.ctrl.done{border-color:rgba(48,209,88,.3);color:var(--green)}
+.ctrl.done{border-color:rgba(48,209,88,0.2);color:var(--green);background:rgba(48,209,88,0.05)}
 .ctrl.done i{color:var(--green)}
 .ctrl.done .cdot{background:var(--green);animation:none}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
 
 /* ── TABS ── */
 .tabs{
   flex-shrink:0;display:flex;align-items:stretch;
   background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 10px;
+  padding:0 12px;
 }
 .tab{
-  display:flex;align-items:center;gap:6px;
-  padding:0 13px;height:36px;
+  display:flex;align-items:center;gap:8px;
+  padding:0 16px;height:40px;
   font-size:12px;font-family:var(--mono);
-  color:var(--text2);border-bottom:2px solid var(--accent);
+  color:var(--text);position:relative;
 }
-.tab i{font-size:11px;color:var(--orange)}
+.tab i{font-size:13px;color:var(--orange)}
+.tab::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:2px;background:var(--accent)}
 
 /* ── EDITOR ── */
-.editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden}
+.editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden;background:var(--bg)}
 .gutter{
-  width:46px;flex-shrink:0;
-  background:var(--bg);border-right:1px solid var(--border);
-  padding-top:14px;overflow:hidden;user-select:none;pointer-events:none;
+  width:50px;flex-shrink:0;
+  background:var(--surface);border-right:1px solid var(--border);
+  padding-top:16px;overflow:hidden;user-select:none;pointer-events:none;
 }
-.ln{display:block;text-align:right;padding-right:10px;font-size:12px;line-height:23px;color:var(--text3);font-family:var(--mono);opacity:.6}
-.code-scroll{flex:1;overflow-y:auto;overflow-x:auto;padding:14px 14px 60px;background:var(--bg)}
+.ln{display:block;text-align:right;padding-right:12px;font-size:12px;line-height:24px;color:var(--text3);font-family:var(--mono);opacity:0.5}
+.code-scroll{flex:1;overflow-y:auto;overflow-x:auto;padding:16px 16px 60px;background:transparent}
 pre#out{
-  font-family:var(--mono);font-size:13px;line-height:23px;
-  color:var(--text);white-space:pre;tab-size:2;min-height:100%;
+  font-family:var(--mono);font-size:14px;line-height:24px;
+  color:var(--text);white-space:pre;tab-size:4;min-height:100%;
 }
 
-/* blinking text cursor — same as a real editor */
+/* blinking text cursor */
 .cur{
-  display:inline-block;width:2px;height:1em;
-  background:var(--text2);vertical-align:text-bottom;
+  display:inline-block;width:2px;height:1.2em;
+  background:var(--accent);vertical-align:text-bottom;
   animation:cur 1s step-start infinite;
+  box-shadow:0 0 8px var(--accent);
 }
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
@@ -103,31 +113,38 @@ pre#out{
 .preview-wrap{
   flex-shrink:0;overflow:hidden;
   border-top:1px solid var(--border);background:#fff;
-  transition:height .3s ease;
+  transition:height 0.4s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:0 -10px 30px rgba(0,0,0,0.2);
 }
-.preview-wrap.open{height:38vh}
+.preview-wrap.open{height:40vh}
 .preview-wrap.shut{height:0}
 .preview-bar{
-  height:32px;background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 10px;gap:8px;
+  height:36px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;gap:10px;
 }
-.pb-dots{display:flex;gap:5px}
-.pbd{width:8px;height:8px;border-radius:50%}
-.pbd.r{background:#ff5f57}.pbd.y{background:#febc2e}.pbd.g{background:#28c840}
-.pb-label{font-size:11px;color:var(--text3);font-family:var(--sans);flex:1;display:flex;align-items:center;gap:6px}
-.pb-label i{font-size:10px}
-#prvFrame{width:100%;height:calc(100% - 32px);border:none}
+.pb-label{font-size:11px;font-weight:600;color:var(--text3);font-family:var(--sans);flex:1;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:0.5px}
+.pb-label i{color:var(--accent)}
+#prvFrame{width:100%;height:calc(100% - 36px);border:none}
 
 /* ── STATUSBAR ── */
 .statusbar{
-  flex-shrink:0;height:24px;
-  background:#007aff;
-  display:flex;align-items:center;padding:0 10px;gap:14px;
-  font-size:10px;font-family:var(--sans);color:rgba(255,255,255,.85);
+  flex-shrink:0;height:28px;
+  background:var(--accent);
+  display:flex;align-items:center;padding:0 12px;gap:16px;
+  font-size:11px;font-weight:500;color:rgba(255,255,255,0.9);
 }
-.sb{display:flex;align-items:center;gap:4px}
-.sb i{font-size:9px;opacity:.7}
+.sb{display:flex;align-items:center;gap:6px}
+.sb i{font-size:10px;opacity:0.8}
 .sb-sp{flex:1}
+
+/* ── MOBILE OPTIMIZATIONS ── */
+@media (max-width:600px){
+  .title-text{display:none}
+  .gutter{width:40px}
+  .ln{padding-right:8px;font-size:11px}
+  pre#out{font-size:13px}
+  .preview-wrap.open{height:45vh}
+}
 
 /* ── EMPTY ── */
 .empty{
@@ -149,11 +166,11 @@ pre#out{
 .back-a:active{transform:scale(.95)}
 </style>
 </head>
-<body>
-
+<title>CodeWithArnix & GamerArnabXYZ</title>
+...
 <div class="titlebar">
   <div class="wdots"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div></div>
-  <div class="title-mid"><span class="title-text">CodePad</span></div>
+  <div class="title-mid"><span class="title-text">CodeWithArnix & GamerArnabXYZ</span></div>
   <button class="ctrl" id="ctrl" onclick="toggle()">
     <div class="cdot"></div>
     <i class="fa-solid fa-pause" id="ctrlIco"></i>
@@ -219,34 +236,46 @@ window.addEventListener('DOMContentLoaded',()=>{
 function startTyping(){
   if(running||!code)return;
   running=true;paused=false;setState('running');
-  timer=setInterval(tick,delay());
+  tick();
 }
 
 function tick(){
+  if(!running || paused) return;
+  
   if(idx>=code.length){
-    clearInterval(timer);timer=null;running=false;paused=false;
+    running=false;paused=false;
     setState('done');updateSb();
     renderPreview(code);
     return;
   }
+  
   cur.remove();
   out.appendChild(document.createTextNode(code[idx]));
   out.appendChild(cur);
   idx++;
+  
   cur.scrollIntoView({block:'nearest',behavior:'auto'});
   const ch=code[idx-1];
-  if(ch==='\n'){const l=(code.slice(0,idx).match(/\n/g)||[]).length+1;buildGut(l);}
-  // live preview: update on every closing tag or every 80 chars
-  if(ch==='>' || idx%80===0) renderPreview(code.slice(0,idx));
+  if(ch==='\n'){
+    const l=(code.slice(0,idx).match(/\n/g)||[]).length+1;
+    buildGut(l);
+  }
+  
+  // live preview: update on every closing tag or every 50 chars
+  if(ch==='>' || idx%50===0) renderPreview(code.slice(0,idx));
+  
   updateSb();
+  
+  // Use setTimeout for dynamic speed control
+  timer = setTimeout(tick, delay());
 }
 
 function toggle(){
   if(!running&&!paused){startTyping();return;}
   if(!paused){
-    paused=true;clearInterval(timer);timer=null;setState('paused');
+    paused=true;clearTimeout(timer);timer=null;setState('paused');
   } else {
-    paused=false;running=true;setState('running');timer=setInterval(tick,delay());
+    paused=false;running=true;setState('running');tick();
   }
 }
 
@@ -269,8 +298,15 @@ function updateSb(){
   document.getElementById('sbLn').textContent='Ln '+l;
 }
 
+let lastLnCount = 0;
 function buildGut(n){
-  gut.innerHTML=Array.from({length:n},(_,i)=>`<span class="ln">${i+1}</span>`).join('');
+  if(n === lastLnCount) return;
+  lastLnCount = n;
+  let html = '';
+  for(let i=1; i<=n; i++){
+    html += `<span class="ln">${i}</span>`;
+  }
+  gut.innerHTML = html;
   gut.scrollTop=cs.scrollTop;
 }
 

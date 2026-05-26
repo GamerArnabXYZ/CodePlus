@@ -290,10 +290,17 @@ textarea#code::selection{background:rgba(0,113,227,0.3)}
 </div>
 
 <div class="toolbar">
-  <button class="tbtn" onclick="saveCode()"><i class="fa-solid fa-floppy-disk"></i>Save</button>
+  <button class="tbtn primary" onclick="saveCode()"><i class="fa-solid fa-floppy-disk"></i>Save</button>
   <button class="tbtn" onclick="askClear()"><i class="fa-solid fa-trash-can"></i>Clear</button>
   <button class="tbtn" id="prvToggleBtn" onclick="togglePreview()"><i class="fa-solid fa-display" id="prvIco"></i><span id="prvLbl">Hide Preview</span></button>
   <button class="tbtn" onclick="openSheet()"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto Write</button>
+</div>
+
+<div class="creator-bar">
+  <div class="c-opt"><i class="fa-solid fa-bolt"></i><span>Turbo Mode</span><input type="checkbox" id="turbo" checked></div>
+  <div class="c-opt"><i class="fa-solid fa-wave-square"></i><span>Screen Shake</span><input type="checkbox" id="shake" checked></div>
+  <div class="c-opt"><i class="fa-solid fa-music"></i><span>Typing Sound</span><input type="checkbox" id="sound"></div>
+  <div class="c-opt"><i class="fa-solid fa-circle-nodes"></i><span>Particles</span><input type="checkbox" id="particles" checked></div>
 </div>
 
 <div class="speed-bar">

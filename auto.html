@@ -244,9 +244,14 @@ const delays=[120,80,50,30,20,12,8,4,2,1];
 
 // Audio Context for synthesized sound
 let audioCtx = null;
+function initAudio() {
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+}
+
 function playClick() {
   if(!getOpt('sound')) return;
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  initAudio();
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = 'square';
@@ -276,6 +281,8 @@ window.addEventListener('DOMContentLoaded',()=>{
     out.style.display='block';
     out.appendChild(cur);
     buildGut(1);
+    // Try to init audio on first click anywhere
+    document.body.addEventListener('click', initAudio, {once:true});
     setTimeout(startTyping,350);
   }
 });
@@ -358,7 +365,7 @@ function confettiBurst(){
 }
 
 function toggle(){
-  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  initAudio();
   if(!running&&!paused){startTyping();return;}
   if(!paused){
     paused=true;clearTimeout(timer);timer=null;setState('paused');

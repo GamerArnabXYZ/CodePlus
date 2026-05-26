@@ -85,22 +85,31 @@ body{color:var(--text);font-family:var(--sans);display:flex;flex-direction:colum
 
 /* ── TOOLBAR ── */
 .toolbar{
-  flex-shrink:0;display:flex;gap:8px;
-  padding:10px 12px;
+  flex-shrink:0;display:flex;align-items:center;gap:12px;
+  padding:10px 15px;
   background:var(--bg);border-bottom:1px solid var(--border);
   overflow-x:auto;scrollbar-width:none;
 }
 .toolbar::-webkit-scrollbar{display:none}
 .tbtn{
-  display:flex;align-items:center;gap:8px;
-  padding:0 14px;height:36px;border-radius:var(--radius);
-  border:1px solid var(--border);background:var(--surface);
-  color:var(--text2);font-size:12px;font-weight:500;
-  cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;
+  background:linear-gradient(145deg, var(--surface2), var(--surface));
+  border:1px solid var(--border);color:var(--text2);
+  padding:0 16px;height:38px;border-radius:var(--radius);
+  font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:all 0.3s ease;flex-shrink:0;
 }
-.tbtn i{font-size:14px;color:var(--text3)}
-.tbtn:hover{background:var(--surface2);border-color:var(--border2);color:var(--text);transform:translateY(-1px)}
-.tbtn:active{transform:translateY(0) scale(0.97);background:var(--surface3)}
+.tbtn:hover{border-color:var(--accent);color:var(--text);box-shadow:var(--neon-glow);transform:translateY(-1px)}
+.tbtn.primary{background:linear-gradient(45deg, var(--accent), var(--accent-alt));color:#000;border:none}
+
+.t-sep{width:1px;height:24px;background:var(--border);flex-shrink:0;margin:0 4px}
+
+.c-opt{
+  display:flex;align-items:center;gap:8px;padding:0 12px;height:38px;
+  border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);
+  font-size:11px;font-weight:700;color:var(--text2);white-space:nowrap;cursor:pointer;flex-shrink:0;
+}
+.c-opt:hover{border-color:var(--accent);color:var(--text)}
+.c-opt input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
 
 /* ── SPEED BAR ── */
 .speed-bar{
@@ -294,13 +303,13 @@ textarea#code::selection{background:rgba(0,113,227,0.3)}
   <button class="tbtn" onclick="askClear()"><i class="fa-solid fa-trash-can"></i>Clear</button>
   <button class="tbtn" id="prvToggleBtn" onclick="togglePreview()"><i class="fa-solid fa-display" id="prvIco"></i><span id="prvLbl">Hide Preview</span></button>
   <button class="tbtn" onclick="openSheet()"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto Write</button>
-</div>
+  
+  <div class="t-sep"></div>
 
-<div class="creator-bar">
-  <div class="c-opt"><i class="fa-solid fa-bolt"></i><span>Turbo Mode</span><input type="checkbox" id="turbo" checked></div>
-  <div class="c-opt"><i class="fa-solid fa-wave-square"></i><span>Screen Shake</span><input type="checkbox" id="shake" checked></div>
-  <div class="c-opt"><i class="fa-solid fa-music"></i><span>Typing Sound</span><input type="checkbox" id="sound"></div>
-  <div class="c-opt"><i class="fa-solid fa-circle-nodes"></i><span>Particles</span><input type="checkbox" id="particles" checked></div>
+  <label class="c-opt" for="turbo"><i class="fa-solid fa-bolt"></i><span>Turbo</span><input type="checkbox" id="turbo" checked></label>
+  <label class="c-opt" for="shake"><i class="fa-solid fa-wave-square"></i><span>Shake</span><input type="checkbox" id="shake" checked></label>
+  <label class="c-opt" for="sound"><i class="fa-solid fa-music"></i><span>Sound</span><input type="checkbox" id="sound"></label>
+  <label class="c-opt" for="particles"><i class="fa-solid fa-circle-nodes"></i><span>FX</span><input type="checkbox" id="particles" checked></label>
 </div>
 
 <div class="speed-bar">

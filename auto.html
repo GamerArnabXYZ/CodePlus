@@ -242,55 +242,33 @@ const cs=document.getElementById('cs');
 const cur=document.createElement('span'); cur.className='cur';
 const delays=[120,80,50,30,20,12,8,4,2,1];
 
-// Audio Context for synthesized sound
+// Audio Context and Buffer for real sound
 let audioCtx = null;
-function initAudio() {
+let clickBuffer = null;
+
+async function initAudio() {
   if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(audioCtx.state === 'suspended') audioCtx.resume();
+  if(audioCtx.state === 'suspended') await audioCtx.resume();
+  
+  if(!clickBuffer && getOpt('sound')) {
+    try {
+      const resp = await fetch('keyboard affect.wav');
+      const arrayBuf = await resp.arrayBuffer();
+      clickBuffer = await audioCtx.decodeAudioData(arrayBuf);
+    } catch(e) { console.error("Audio load error:", e); }
+  }
 }
 
 function playClick() {
-  if(!getOpt('sound')) return;
+  if(!getOpt('sound') || !clickBuffer) return;
   initAudio();
-  const t = audioCtx.currentTime;
-  
-  // 1. High-pitched metal "click"
-  const osc1 = audioCtx.createOscillator();
-  const g1 = audioCtx.createGain();
-  osc1.type = 'sine';
-  osc1.frequency.setValueAtTime(3000 + Math.random() * 500, t);
-  osc1.frequency.exponentialRampToValueAtTime(800, t + 0.03);
-  g1.gain.setValueAtTime(0.1, t);
-  g1.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-  osc1.connect(g1);
-  g1.connect(audioCtx.destination);
-  
-  // 2. Plastic "thud" (bottoming out)
-  const osc2 = audioCtx.createOscillator();
-  const g2 = audioCtx.createGain();
-  osc2.type = 'triangle';
-  osc2.frequency.setValueAtTime(150 + Math.random() * 20, t);
-  g2.gain.setValueAtTime(0.05, t);
-  g2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-  osc2.connect(g2);
-  g2.connect(audioCtx.destination);
-  
-  // 3. Short noise burst for texture
-  const bufferSize = audioCtx.sampleRate * 0.02;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-  const noise = audioCtx.createBufferSource();
-  const g3 = audioCtx.createGain();
-  noise.buffer = buffer;
-  g3.gain.setValueAtTime(0.03, t);
-  g3.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
-  noise.connect(g3);
-  g3.connect(audioCtx.destination);
-
-  osc1.start(t); osc1.stop(t + 0.03);
-  osc2.start(t); osc2.stop(t + 0.08);
-  noise.start(t);
+  const source = audioCtx.createBufferSource();
+  source.buffer = clickBuffer;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.2, audioCtx.currentTime); // Adjust volume if needed
+  source.connect(gain);
+  gain.connect(audioCtx.destination);
+  source.start(0);
 }
 
 // Creator Settings

@@ -104,12 +104,38 @@ body{color:var(--text);font-family:var(--sans);display:flex;flex-direction:colum
 .t-sep{width:1px;height:24px;background:var(--border);flex-shrink:0;margin:0 4px}
 
 .c-opt{
-  display:flex;align-items:center;gap:8px;padding:0 12px;height:38px;
-  border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;padding:0 14px;height:38px;
+  border-radius:20px;background:var(--surface2);border:1px solid var(--border);
   font-size:11px;font-weight:700;color:var(--text2);white-space:nowrap;cursor:pointer;flex-shrink:0;
+  transition:all 0.3s ease;
 }
-.c-opt:hover{border-color:var(--accent);color:var(--text)}
-.c-opt input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
+.c-opt:hover{border-color:var(--border2);transform:translateY(-1px)}
+
+/* Custom Switch Styling */
+.c-opt input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:34px;height:18px;border-radius:10px;
+  background:linear-gradient(135deg, #ff4b2b, #ff416c); /* Red Gradient for OFF */
+  position:relative;cursor:pointer;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+.c-opt input[type=checkbox]::before{
+  content:'';position:absolute;top:2px;left:2px;
+  width:14px;height:14px;border-radius:50%;background:#fff;
+  transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.c-opt input[type=checkbox]:checked{
+  background:linear-gradient(135deg, #11998e, #38ef7d); /* Green Gradient for ON */
+}
+.c-opt input[type=checkbox]:checked::before{
+  left:18px;
+}
+.c-opt:has(input:checked){
+  border-color:rgba(56,239,125,0.3);
+  color:var(--text);
+  box-shadow: 0 0 10px rgba(56,239,125,0.1);
+}
 
 /* ── SPEED BAR ── */
 .speed-bar{

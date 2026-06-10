@@ -116,15 +116,19 @@ body::before {
 pre#out{
   font-family:var(--mono);font-size:16px;line-height:1.7;
   color:var(--text);white-space:pre;tab-size:4;min-height:100%;
-  text-shadow:0 0 8px rgba(255,255,255,0.2);
+  text-shadow:0 0 8px rgba(255,255,255,0.1);
 }
+#out .tag { color: #569cd6; }
+#out .attr { color: #9cdcfe; }
+#out .val { color: #ce9178; }
+#out .com { color: #6a9955; font-style: italic; }
 
 .cur{
   display:inline-block;width:8px;height:1.2em;
   background:var(--accent);vertical-align:text-bottom;
   animation:cur 1s step-start infinite;
   box-shadow:0 0 15px var(--accent);
-  border-radius:2px;
+  border-radius:2px;margin-left:2px;
 }
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
@@ -261,14 +265,25 @@ async function initAudio() {
 
 function playClick() {
   if(!getOpt('sound') || !clickBuffer) return;
-  initAudio();
+  if(!audioCtx) return;
   const source = audioCtx.createBufferSource();
   source.buffer = clickBuffer;
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.2, audioCtx.currentTime); // Adjust volume if needed
+  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
   source.connect(gain);
   gain.connect(audioCtx.destination);
   source.start(0);
+}
+
+// Simple Syntax Highlighter for auto-type
+function highlight(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/(&lt;[!\/]?[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9-]+(?:=".*?")?)*[!\/]?&gt;)/g, '<span class="tag">$1</span>')
+    .replace(/(".*?")/g, '<span class="val">$1</span>')
+    .replace(/(&lt;!--.*?--&gt;)/g, '<span class="com">$1</span>');
 }
 
 // Creator Settings
@@ -286,11 +301,14 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(code){
     document.getElementById('empty').classList.remove('show');
     out.style.display='block';
+    out.innerHTML = '';
     out.appendChild(cur);
     buildGut(1);
-    // Try to init audio on first click anywhere
-    document.body.addEventListener('click', initAudio, {once:true});
-    setTimeout(startTyping,350);
+    // User interaction required for audio
+    document.body.addEventListener('click', () => {
+      initAudio();
+    }, {once:true});
+    setTimeout(startTyping,500);
   }
 });
 
@@ -313,32 +331,29 @@ function tick(){
   }
   
   const ch=code[idx];
-  cur.remove();
-  out.appendChild(document.createTextNode(ch));
-  out.appendChild(cur);
   idx++;
+  
+  // Update output with highlight
+  const partial = code.slice(0, idx);
+  out.innerHTML = highlight(partial);
+  out.appendChild(cur);
   
   playClick();
 
   // Screen Shake effect
   if(getOpt('shake') && ch !== ' ' && ch !== '\n') {
     document.body.classList.add('shake');
-    setTimeout(() => document.body.classList.remove('shake'), 50);
-  }
-  
-  // Glow burst on closing tags
-  if(ch === '>') {
-    out.style.textShadow = '0 0 20px var(--accent)';
-    setTimeout(() => out.style.textShadow = '0 0 8px rgba(255,255,255,0.2)', 300);
+    setTimeout(() => document.body.classList.remove('shake'), 40);
   }
   
   cur.scrollIntoView({block:'nearest',behavior:'auto'});
   if(ch==='\n'){
-    const l=(code.slice(0,idx).match(/\n/g)||[]).length+1;
+    const l=(partial.match(/\n/g)||[]).length+1;
     buildGut(l);
   }
   
-  if(ch==='>' || idx%40===0) renderPreview(code.slice(0,idx));
+  // Optimized Preview Render: only on tags or every 100 chars
+  if(ch==='>' || idx%100===0) renderPreview(partial);
   
   updateSb();
   timer = setTimeout(tick, delay());

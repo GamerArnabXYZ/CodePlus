@@ -33,7 +33,7 @@ body{
 
 /* ── CINEMATIC CARD ── */
 .code-card{
-  width:92%; max-width:850px; height:80vh;
+  width:88%; max-width:800px; height:65vh; /* Reduced height for top/bottom space */
   background:var(--card-bg); border:1px solid var(--border);
   border-radius:28px; position:relative; overflow:hidden;
   backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
@@ -41,48 +41,42 @@ body{
   display:flex; flex-direction:column;
   transition:0.5s cubic-bezier(0.4,0,0.2,1);
   animation:card-float 6s ease-in-out infinite;
+  margin:60px 0; /* Vertical Safe Zone */
 }
-@keyframes card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+@keyframes card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 
 .card-header{
-  height:54px; padding:0 24px; background:rgba(0,0,0,0.4);
+  height:50px; padding:0 24px; background:rgba(0,0,0,0.4);
   display:flex; align-items:center; justify-content:space-between;
   border-bottom:1px solid var(--border);
 }
 .card-dots{display:flex; gap:10px;}
-.cdot{width:11px; height:11px; border-radius:50%;}
+.cdot{width:10px; height:10px; border-radius:50%;}
 
 .code-area{
-  flex:1; padding:32px; overflow-y:auto; scrollbar-width:none;
-  font-family:'JetBrains Mono', monospace; font-size:16px; line-height:1.8;
+  flex:1; padding:28px; overflow-y:auto; scrollbar-width:none;
+  font-family:'JetBrains Mono', monospace; font-size:15px; line-height:1.7;
 }
 .code-area::-webkit-scrollbar{display:none;}
 
 /* ── UI ELEMENTS ── */
 .ctrl{
-  padding:0 20px; height:38px; border-radius:19px;
+  padding:0 18px; height:36px; border-radius:18px;
   background:rgba(255,255,255,0.05); border:1px solid var(--border);
-  color:var(--accent); font-size:11px; font-weight:800; cursor:pointer;
+  color:var(--accent); font-size:10px; font-weight:800; cursor:pointer;
   display:flex; align-items:center; gap:8px; transition:0.3s;
   backdrop-filter:blur(10px);
 }
-.ctrl:hover{background:rgba(255,255,255,0.1); border-color:var(--accent);}
 
-/* ── RECORDING MODE ── */
-body.recording .ui-hide{opacity:0; pointer-events:none;}
+/* ── GHOST RECORDING MODE ── */
+body.recording .ui-hide, body.recording .rec-btn { opacity:0; pointer-events:none; visibility:hidden; }
+
 .rec-btn{
   position:fixed; bottom:40px; right:30px;
   width:64px; height:64px; border-radius:50%;
   background:rgba(255,59,48,0.15); border:2px solid #ff3b30;
   display:flex; align-items:center; justify-content:center;
   color:#ff3b30; cursor:pointer; z-index:1000; transition:0.4s;
-}
-.rec-btn.active{background:#ff3b30; color:#fff; box-shadow:0 0 35px #ff3b30; transform:scale(0.9);}
-
-/* ── SWITCHER BTN (Focus Mode) ── */
-#switchBtn{
-  position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
-  display:none; z-index:1000;
 }
 
 /* ── SYNTAX COLORS ── */
@@ -91,7 +85,7 @@ body.recording .ui-hide{opacity:0; pointer-events:none;}
 .val{color:#f1fa8c}
 .com{color:#6272a4; font-style:italic}
 
-pre#out{ white-space:pre-wrap; word-break:break-all; } /* LINE WRAP */
+pre#out{ white-space:pre-wrap; word-break:break-all; }
 
 .cur{
   display:inline-block; width:8px; height:1.2em;
@@ -101,23 +95,21 @@ pre#out{ white-space:pre-wrap; word-break:break-all; } /* LINE WRAP */
 }
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
-.preview-wrap{width:100%; overflow:hidden; background:#fff; border-top:1px solid var(--border); transition:0.5s cubic-bezier(0.4,0,0.2,1);}
+.preview-wrap{width:100%; overflow:hidden; background:#fff; border-top:1px solid var(--border); transition:0.5s;}
 
-/* Layout Adjustments */
-body.lay-wide .code-card { height:90vh; max-width:1000px; }
+/* Layouts */
+body.lay-wide .code-card { height:75vh; max-width:950px; }
 body.lay-wide .code-area { flex:0.4; }
 body.lay-wide #prvWrap { flex:1; height:auto !important; }
-
-body.lay-focus .preview-wrap { border-top:none; height:100% !important; display:none; }
+body.lay-focus .preview-wrap { display:none; height:100% !important; border:none; }
 body.lay-focus.show-prv .code-area { display:none; }
 body.lay-focus.show-prv .preview-wrap { display:block; }
-body.lay-focus #switchBtn { display:flex; }
 
-.statusbar{position:fixed; bottom:0; left:0; right:0; height:30px; background:rgba(0,0,0,0.5); display:flex; align-items:center; padding:0 20px; font-size:10px; font-weight:800; color:#444;}
+.statusbar{position:fixed; bottom:0; left:0; right:0; height:26px; background:rgba(0,0,0,0.3); display:flex; align-items:center; padding:0 20px; font-size:9px; font-weight:800; color:#333;}
 .shake { animation: shake 0.1s linear infinite; }
 @keyframes shake { 0%{transform:translate(0,0)} 25%{transform:translate(1px,1px)} 50%{transform:translate(-1px,1px)} 75%{transform:translate(1px,-1px)} 100%{transform:translate(0,0)} }
 
-@media (max-width:600px){ .code-area{padding:20px; font-size:14px;} }
+@media (max-width:600px){ .code-card{width:94%; height:60vh;} .code-area{padding:20px;} }
 </style>
 <title>Pro Capture Studio</title>
 </head>
@@ -131,32 +123,35 @@ body.lay-focus #switchBtn { display:flex; }
       <div class="cdot" style="background:#febc2e"></div>
       <div class="cdot" style="background:#28c840"></div>
     </div>
-    <span style="font-size:10px;font-weight:900;color:var(--accent);letter-spacing:3px;text-transform:uppercase" id="fname">IDE SOURCE</span>
+    <span style="font-size:9px;font-weight:900;color:var(--accent);letter-spacing:3px;text-transform:uppercase" id="fname">STUDIO SOURCE</span>
     <div style="width:40px"></div>
   </div>
-  
-  <div class="code-area" id="cs">
-    <pre id="out"></pre>
-  </div>
+  <div class="code-area" id="cs"><pre id="out"></pre></div>
+  <div class="preview-wrap" id="prvWrap" style="height:0"><iframe id="prvFrame" style="width:100%;height:100%;border:none"></iframe></div>
+</div>
 
-  <div class="preview-wrap" id="prvWrap" style="height:0">
-     <iframe id="prvFrame" style="width:100%;height:100%;border:none"></iframe>
+<!-- FLOATING STUDIO UI -->
+<div class="ui-hide" style="position:fixed;top:20px;left:20px;display:flex;flex-direction:column;gap:10px;z-index:500">
+  <div style="display:flex;gap:8px">
+    <button class="ctrl" onclick="toggle()"><i class="fa-solid fa-pause" id="ctrlIco"></i><span id="ctrlLbl">Stop</span></button>
+    <button class="ctrl" id="prvToggle" onclick="togglePreview()"><i class="fa-solid fa-display"></i></button>
+  </div>
+  <!-- On-the-fly Font Size -->
+  <div class="ctrl" style="height:32px; gap:12px; width:fit-content">
+    <i class="fa-solid fa-font" style="font-size:10px"></i>
+    <input type="range" min="10" max="24" value="15" oninput="updateFS(this.value)" style="width:80px; accent-color:var(--accent)">
+    <span id="fsNum" style="min-width:25px">15px</span>
   </div>
 </div>
 
-<div class="ui-hide" style="position:fixed;top:30px;left:30px;display:flex;gap:12px;z-index:500">
-  <button class="ctrl" onclick="toggle()"><i class="fa-solid fa-pause" id="ctrlIco"></i><span id="ctrlLbl">Stop</span></button>
-  <button class="ctrl" id="prvToggle" onclick="togglePreview()"><i class="fa-solid fa-display"></i> Preview</button>
-</div>
-
-<button class="ctrl ui-hide" id="switchBtn" onclick="focusSwitch()">
+<button class="ctrl ui-hide" id="switchBtn" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:none" onclick="focusSwitch()">
   <i class="fa-solid fa-rotate"></i> <span id="swTxt">Show Preview</span>
 </button>
 
 <div class="rec-btn" onclick="toggleRec()" id="recBtn"><i class="fa-solid fa-video"></i></div>
 
 <div class="statusbar ui-hide">
-  <span id="sbSt">INITIALIZING...</span><div style="flex:1"></div><span id="sbPct">0%</span>
+  <span id="sbSt">READY</span><div style="flex:1"></div><span id="sbPct">0%</span>
 </div>
 
 <script>
@@ -164,7 +159,8 @@ const LS='codepad_v1', LSP='codepad_speed', LSL='codepad_layout';
 let code='',idx=0,running=false,paused=false,timer=null;
 const out=document.getElementById('out'), cs=document.getElementById('cs');
 const cur=document.createElement('span'); cur.className='cur';
-const delays=[120,80,50,30,20,12,8,4,2,1];
+// Extended Speeds: 1 to 20
+const delays=[150,120,100,80,65,55,45,35,28,22,18,14,10,7,5,3,2,1,0.5,0];
 
 let audioCtx = null, clickBuffer = null;
 async function initAudio() {
@@ -180,7 +176,7 @@ async function initAudio() {
 function playClick() {
   if(localStorage.getItem('cp_sound') !== 'true' || !clickBuffer || !audioCtx) return;
   const source = audioCtx.createBufferSource(); source.buffer = clickBuffer;
-  const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
   source.connect(gain); gain.connect(audioCtx.destination); source.start(0);
 }
 
@@ -207,15 +203,18 @@ window.addEventListener('DOMContentLoaded',()=>{
   code=localStorage.getItem(LS)||'';
   const layout = localStorage.getItem(LSL) || 'classic';
   document.body.classList.add('lay-' + layout);
-  
-  if(layout === 'wide') { document.getElementById('prvWrap').style.height = 'auto'; }
-  if(layout === 'focus') { document.getElementById('prvToggle').style.display = 'none'; }
+  if(layout === 'focus') { document.getElementById('switchBtn').style.display = 'flex'; document.getElementById('prvToggle').style.display='none'; }
 
   if(code){
     out.innerHTML = ''; out.appendChild(cur);
     document.body.addEventListener('click', initAudio, {once:true});
-    setTimeout(startTyping, 1000);
-  } else { document.getElementById('sbSt').textContent = 'NO CODE FOUND'; }
+    // Restore UI on Double Tap
+    document.body.addEventListener('dblclick', () => {
+      document.body.classList.remove('recording');
+      document.getElementById('recBtn').classList.remove('active');
+    });
+    setTimeout(startTyping, 1200);
+  }
 });
 
 function startTyping(){ running=true; setState('running'); tick(); }
@@ -225,8 +224,7 @@ function tick(){
   if(idx>=code.length){ running=false; setState('done'); confettiBurst(); return; }
   
   const ch=code[idx]; idx++;
-  const partial = code.slice(0, idx);
-  out.innerHTML = highlight(partial);
+  out.innerHTML = highlight(code.slice(0, idx));
   out.appendChild(cur);
   playClick();
 
@@ -236,11 +234,20 @@ function tick(){
   }
   
   cur.scrollIntoView({block:'nearest',behavior:'smooth'});
-  if(ch==='>' || idx%100===0) renderPreview(partial);
+  if(ch==='>' || idx%100===0) renderPreview(code.slice(0,idx));
   updateSb();
-  const d = delays[Math.min(Math.max(parseInt(localStorage.getItem(LSP)||'5'),1),10)-1];
-  const delay = localStorage.getItem('cp_turbo')==='true' ? Math.max(1, d/2) : d;
+  
+  // Extended Speed Logic (20 levels)
+  const spdIdx = Math.min(Math.max(parseInt(localStorage.getItem(LSP)||'5'),1),20)-1;
+  let delay = delays[spdIdx];
+  if(localStorage.getItem('cp_turbo')==='true') delay = Math.max(0, delay/2);
+  
   timer = setTimeout(tick, delay);
+}
+
+function updateFS(v){ 
+  document.querySelector('.code-area').style.fontSize = v+'px'; 
+  document.getElementById('fsNum').textContent = v+'px'; 
 }
 
 function toggle(){
@@ -249,22 +256,17 @@ function toggle(){
 }
 function toggleRec(){ document.body.classList.toggle('recording'); document.getElementById('recBtn').classList.toggle('active'); }
 function renderPreview(html){ document.getElementById('prvFrame').srcdoc = html; }
-
 function togglePreview(){ 
   const p = document.getElementById('prvWrap');
-  if(p.style.height==='0px'||!p.style.height){ p.style.height='30vh'; }
-  else { p.style.height='0'; }
+  p.style.height = (p.style.height==='0px'||!p.style.height) ? '25vh' : '0';
 }
-
 function focusSwitch() {
   const isPrv = document.body.classList.toggle('show-prv');
   document.getElementById('swTxt').textContent = isPrv ? 'Show Code' : 'Show Preview';
 }
-
 function setState(s){
   document.getElementById('ctrlLbl').textContent = s==='paused'?'Resume':'Stop';
   document.getElementById('ctrlIco').className = s==='paused'?'fa-solid fa-play':'fa-solid fa-pause';
-  document.getElementById('sbSt').textContent = s.toUpperCase();
 }
 function updateSb(){ document.getElementById('sbPct').textContent = Math.round((idx/code.length)*100)+'%'; }
 function confettiBurst(){

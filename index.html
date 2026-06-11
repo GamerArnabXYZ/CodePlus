@@ -184,7 +184,8 @@ textarea#code{
   flex:1;background:transparent;color:var(--text);
   font-family:var(--mono);font-size:14px;line-height:24px;
   padding:16px;border:none;outline:none;resize:none;
-  tab-size:2;caret-color:var(--accent);overflow:auto;white-space:pre;
+  tab-size:2;caret-color:var(--accent);overflow:auto;white-space:pre-wrap;
+  word-break:break-word;
 }
 textarea#code::selection{background:rgba(0,113,227,0.3)}
 
@@ -326,6 +327,7 @@ textarea#code::selection{background:rgba(0,113,227,0.3)}
 
 <div class="toolbar">
   <button class="tbtn primary" onclick="saveCode()"><i class="fa-solid fa-floppy-disk"></i>Save</button>
+  <button class="tbtn" onclick="copyCode()"><i class="fa-solid fa-copy"></i>Copy</button>
   <button class="tbtn" onclick="askClear()"><i class="fa-solid fa-trash-can"></i>Clear</button>
   <button class="tbtn" id="prvToggleBtn" onclick="togglePreview()"><i class="fa-solid fa-display" id="prvIco"></i><span id="prvLbl">Hide Preview</span></button>
   <button class="tbtn" onclick="openSheet()"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto Write</button>
@@ -510,6 +512,13 @@ function buildGut(){
 }
 
 function saveCode(){localStorage.setItem(LS,ta.value);setSaved();refreshPreview();toast('fa-floppy-disk','Saved','t-green');}
+
+function copyCode(){
+  if(!ta.value.trim()){toast('fa-triangle-exclamation','Kuch copy karne ko hai hi nahi!','t-orange');return;}
+  navigator.clipboard.writeText(ta.value).then(()=>{
+    toast('fa-copy','Code Copy ho gaya!','t-blue');
+  });
+}
 
 function askClear(){if(!ta.value.trim()){toast('fa-circle-info','Already empty','');return;}document.getElementById('confBg').classList.add('show');}
 function closeConf(){document.getElementById('confBg').classList.remove('show');}

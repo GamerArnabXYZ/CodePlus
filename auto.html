@@ -115,7 +115,8 @@ body::before {
 .code-scroll{flex:1;overflow-y:auto;overflow-x:auto;padding:30px;background:transparent}
 pre#out{
   font-family:var(--mono);font-size:16px;line-height:1.7;
-  color:var(--text);white-space:pre;tab-size:4;min-height:100%;
+  color:var(--text);white-space:pre-wrap;word-break:break-word;
+  tab-size:4;min-height:100%;
   text-shadow:0 0 8px rgba(255,255,255,0.1);
 }
 #out .tag { color: #569cd6; }
@@ -275,15 +276,35 @@ function playClick() {
   source.start(0);
 }
 
-// Simple Syntax Highlighter for auto-type
+// Fixed Syntax Highlighter: Using a single pass replacement to avoid double-highlighting
 function highlight(text) {
-  return text
+  const escaped = text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/(&lt;[!\/]?[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9-]+(?:=".*?")?)*[!\/]?&gt;)/g, '<span class="tag">$1</span>')
-    .replace(/(".*?")/g, '<span class="val">$1</span>')
-    .replace(/(&lt;!--.*?--&gt;)/g, '<span class="com">$1</span>');
+    .replace(/>/g, '&gt;');
+  
+  const rules = [
+    { reg: /(&lt;!--.*?--&gt;)/g, cls: 'com' },
+    { reg: /(&lt;[!\/]?[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9-]+(?:=".*?")?)*[!\/]?&gt;)/g, cls: 'tag' },
+    { reg: /(".*?")/g, cls: 'val' }
+  ];
+
+  let result = escaped;
+  const placeholders = [];
+  
+  rules.forEach((rule, i) => {
+    result = result.replace(rule.reg, (match) => {
+      const ph = `__PH_${i}_${placeholders.length}__`;
+      placeholders.push({ ph, html: `<span class="${rule.cls}">${match}</span>` });
+      return ph;
+    });
+  });
+
+  placeholders.forEach(p => {
+    result = result.replace(p.ph, p.html);
+  });
+
+  return result;
 }
 
 // Creator Settings
@@ -340,6 +361,11 @@ function tick(){
   
   playClick();
 
+  // Particle FX
+  if(getOpt('particles') && ch !== ' ' && ch !== '\n') {
+    createParticles();
+  }
+
   // Screen Shake effect
   if(getOpt('shake') && ch !== ' ' && ch !== '\n') {
     document.body.classList.add('shake');
@@ -357,6 +383,38 @@ function tick(){
   
   updateSb();
   timer = setTimeout(tick, delay());
+}
+
+function createParticles() {
+  const rect = cur.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  
+  for(let i=0; i<6; i++) {
+    const p = document.createElement('div');
+    p.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:4px; height:4px; background:var(--accent);
+      border-radius:50%; pointer-events:none; z-index:1000;
+      box-shadow:0 0 8px var(--accent);
+    `;
+    document.body.appendChild(p);
+    
+    const angle = Math.random() * Math.PI * 2;
+    const velocity = 2 + Math.random() * 4;
+    const vx = Math.cos(angle) * velocity;
+    const vy = Math.sin(angle) * velocity;
+    let px = 0, py = 0, op = 1;
+    
+    const move = () => {
+      px += vx; py += vy; op -= 0.05;
+      p.style.transform = `translate(${px}px, ${py}px)`;
+      p.style.opacity = op;
+      if(op > 0) requestAnimationFrame(move);
+      else p.remove();
+    };
+    move();
+  }
 }
 
 function confettiBurst(){

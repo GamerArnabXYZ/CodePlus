@@ -9,455 +9,222 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#020203;
-  --surface:rgba(12,12,14,0.85);
-  --surface2:rgba(18,18,20,0.9);
-  --surface3:rgba(24,24,27,0.95);
-  --border:rgba(0,210,255,0.25);
-  --border-glow:rgba(0,210,255,0.4);
-  --text:#ffffff;
-  --text2:#f0f0f5;
-  --text3:#7c7c82;
+  --bg:#020204;
   --accent:#00d2ff;
   --accent-alt:#3a7bd5;
-  --neon-glow:0 0 15px rgba(0,210,255,0.5), 0 0 30px rgba(0,210,255,0.2);
-  --green:#32d74b;
-  --orange:#ff9f0a;
-  --mono:'JetBrains Mono',monospace;
-  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;
-  --glass:saturate(200%) blur(25px);
+  --card-bg:rgba(15,15,20,0.6);
+  --border:rgba(0,210,255,0.3);
+  --text:#ffffff;
+  --glass:blur(40px) saturate(200%);
+  --neon-glow:0 0 20px rgba(0,210,255,0.4), 0 0 40px rgba(0,210,255,0.2);
 }
-html,body{height:100%;overflow:hidden;background:var(--bg)}
-body{color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh}
-
-/* Cinematic RGB Border Refined */
-body::before {
-  content:''; position:fixed; inset:0; pointer-events:none;
-  border:2px solid transparent;
-  background:linear-gradient(var(--bg), var(--bg)) padding-box,
-             linear-gradient(90deg, #ff0055, #00ffcc, #0066ff, #ff0055) border-box;
-  background-size:300% 100%; animation:move-border 6s linear infinite;
-  z-index:9999; opacity:0.15;
-}
-@keyframes move-border{0%{background-position:0% 50%}100%{background-position:300% 50%}}
-
-/* MOVING GRID BACKGROUND REFINED */
-.grid-bg {
-  position: fixed; inset: 0;
-  background-image: linear-gradient(rgba(0,210,255,0.08) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(0,210,255,0.08) 1px, transparent 1px);
-  background-size: 60px 60px;
-  background-position: center;
-  transform: perspective(600px) rotateX(55deg) translateY(0);
-  animation: grid-move 12s linear infinite;
-  opacity: 0.12; z-index: -1;
-}
-@keyframes grid-move {
-  0% { transform: perspective(600px) rotateX(55deg) translateY(0); }
-  100% { transform: perspective(600px) rotateX(55deg) translateY(60px); }
+body{
+  background:radial-gradient(circle at center, #0a0a1a 0%, #020204 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow:hidden;
 }
 
-/* SCREEN SHAKE */
-.shake { animation: shake 0.1s linear infinite; }
-@keyframes shake {
-  0% { transform: translate(0px, 0px); }
-  25% { transform: translate(1px, 1px); }
-  50% { transform: translate(-1px, 1px); }
-  75% { transform: translate(1px, -1px); }
-  100% { transform: translate(0px, 0px); }
+/* ── CINEMATIC CARD ── */
+.code-card{
+  width:92%; max-width:800px; height:80vh;
+  background:var(--card-bg); border:1px solid var(--border);
+  border-radius:24px; position:relative; overflow:hidden;
+  backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
+  box-shadow:0 30px 100px rgba(0,0,0,0.8), var(--neon-glow);
+  display:flex; flex-direction:column;
+  animation:card-float 6s ease-in-out infinite;
 }
+@keyframes card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 
-/* ── TITLEBAR ── */
-.titlebar{
-  flex-shrink:0;height:60px;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 24px;gap:18px;
-  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+.card-header{
+  height:50px; padding:0 20px; background:rgba(0,0,0,0.3);
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border);
 }
-.wdots{display:flex;gap:10px}
-.wd{width:12px;height:12px;border-radius:50%;box-shadow:0 0 10px rgba(0,0,0,0.5)}
-.wd.r{background:#ff5f57;box-shadow:0 0 8px rgba(255,95,87,0.4)}
-.wd.y{background:#febc2e;box-shadow:0 0 8px rgba(254,188,46,0.4)}
-.wd.g{background:#28c840;box-shadow:0 0 8px rgba(40,200,64,0.4)}
-.title-mid{flex:1;display:flex;justify-content:center}
-.title-text{font-size:11px;font-weight:900;color:var(--accent);letter-spacing:3px;text-transform:uppercase;text-shadow:var(--neon-glow)}
+.card-dots{display:flex; gap:8px;}
+.cdot{width:10px; height:10px; border-radius:50%;}
 
-.ctrl{
-  display:flex;align-items:center;gap:10px;
-  padding:0 20px;height:34px;border-radius:17px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--accent);font-size:10px;font-weight:800;letter-spacing:1px;
-  cursor:pointer;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-  box-shadow:var(--neon-glow);
+.code-area{
+  flex:1; padding:30px; overflow-y:auto; scrollbar-width:none;
+  font-family:'JetBrains Mono', monospace; font-size:16px; line-height:1.7;
 }
-.ctrl:hover{background:var(--surface3);transform:scale(1.05);border-color:var(--border-glow)}
-.ctrl:active{transform:scale(0.95)}
-.ctrl .cdot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:var(--neon-glow)}
-.ctrl.running .cdot{animation:blink 1s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.code-area::-webkit-scrollbar{display:none;}
 
-/* ── TABS ── */
-.tabs{
-  flex-shrink:0;display:flex;align-items:stretch;
-  background:rgba(0,0,0,0.2);border-bottom:1px solid var(--border);
-  padding:0 12px;
+/* ── RECORDING MODE ── */
+body.recording .ui-hide{opacity:0; pointer-events:none;}
+.rec-btn{
+  position:fixed; bottom:30px; right:30px;
+  width:60px; height:60px; border-radius:50%;
+  background:rgba(255,59,48,0.2); border:2px solid #ff3b30;
+  display:flex; align-items:center; justify-content:center;
+  color:#ff3b30; cursor:pointer; z-index:1000;
+  transition:0.3s;
 }
-.tab{
-  display:flex;align-items:center;gap:10px;
-  padding:0 20px;height:44px;
-  font-size:11px;font-family:var(--mono);font-weight:600;
-  color:var(--text2);position:relative;letter-spacing:0.5px;
-}
-.tab i{font-size:14px;color:var(--orange);filter:drop-shadow(0 0 5px var(--orange))}
-.tab::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);box-shadow:var(--neon-glow)}
+.rec-btn.active{background:#ff3b30; color:#fff; box-shadow:0 0 30px #ff3b30;}
 
-/* ── EDITOR ── */
-.editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden;background:transparent;position:relative}
-.gutter{
-  width:60px;flex-shrink:0;
-  background:rgba(0,0,0,0.3);border-right:1px solid var(--border);
-  padding-top:24px;overflow:hidden;user-select:none;pointer-events:none;
-}
-.ln{display:block;text-align:right;padding-right:14px;font-size:11px;line-height:26px;color:var(--text3);font-family:var(--mono);opacity:0.3}
-.code-scroll{flex:1;overflow-y:auto;overflow-x:auto;padding:32px;background:transparent}
-pre#out{
-  font-family:var(--mono);font-size:16px;line-height:1.8;
-  color:var(--text);white-space:pre-wrap;word-break:break-word;
-  tab-size:4;min-height:100%;
-  text-shadow:0 0 10px rgba(0,210,255,0.1);
-}
-
-.cur{
-  display:inline-block;width:10px;height:1.2em;
-  background:var(--accent);vertical-align:text-bottom;
-  animation:cur 1s step-start infinite;
-  box-shadow:var(--neon-glow);
-  border-radius:2px;margin-left:2px;
-}
-@keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
-
-/* ── PREVIEW ── */
-.preview-wrap{
-  flex-shrink:0;overflow:hidden;
-  border:1px solid var(--border);background:rgba(255,255,255,0.02);
-  transition:height 0.4s cubic-bezier(0.4,0,0.2,1);
-  box-shadow:0 -20px 60px rgba(0,0,0,0.8);
-  margin:0 12px; border-radius:24px 24px 0 0;
-  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
-}
-.preview-wrap.open{height:40vh}
-.preview-wrap.shut{height:0}
-.preview-bar{
-  height:40px;background:rgba(0,0,0,0.4);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 16px;gap:12px;
-}
-.pb-label{font-size:10px;font-weight:800;color:var(--text3);font-family:var(--sans);flex:1;display:flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:1.5px}
-.pb-label i{color:var(--accent);text-shadow:var(--neon-glow)}
-#prvFrame{width:100%;height:calc(100% - 40px);border:none;background:#fff}
-
-/* ── STATUSBAR ── */
-.statusbar{
-  flex-shrink:0;height:34px;
-  background:linear-gradient(90deg, var(--accent-alt), var(--accent));
-  display:flex;align-items:center;padding:0 20px;gap:20px;
-  font-size:10px;font-weight:800;color:#000;letter-spacing:0.5px;
-  box-shadow:0 -4px 15px rgba(0,0,0,0.3);
-}
-.sb{display:flex;align-items:center;gap:8px}
-.sb i{font-size:10px;color:#000;opacity:0.8}
-.sb-sp{flex:1}
-
-/* ── MOBILE OPTIMIZATIONS ── */
-@media (max-width:600px){
-  .title-text{display:none}
-  .gutter{width:45px}
-  .ln{padding-right:10px;font-size:10px}
-  pre#out{font-size:14px;line-height:1.7}
-  .preview-wrap.open{height:45vh}
-}
-
-/* ── EMPTY ── */
-.empty{
-  display:none;flex-direction:column;align-items:center;
-  justify-content:center;height:100%;gap:12px;
-  color:var(--text3);text-align:center;padding:40px 24px;
-}
-.empty.show{display:flex}
-.empty i.big{font-size:32px;opacity:.2}
-.empty-h{font-size:15px;font-weight:600;color:var(--text2);opacity:.4}
-.empty-p{font-size:12px;line-height:1.6;opacity:.5}
-.back-a{
-  margin-top:6px;display:inline-flex;align-items:center;gap:7px;
-  padding:10px 16px;border-radius:10px;
-  border:1px solid var(--border);background:var(--surface2);
-  color:var(--text2);font-family:var(--sans);font-size:12px;font-weight:500;
-  text-decoration:none;transition:all .15s;
-}
-.back-a:active{transform:scale(.95)}
-</style>
-<title>CodeWithArnix & GamerArnabXYZ</title>
-</head>
+/* ── SYNTAX COLORS ── */
+.tag{color:#ff79c6; text-shadow:0 0 10px rgba(255,121,198,0.3)}
+.attr{color:#50fa7b}
+.val{color:#f1fa8c}
+.com{color:#6272a4; font-style:italic}
+...
 <body>
 <div class="grid-bg"></div>
 
-<div class="titlebar">
-  <div class="wdots"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div></div>
-  <div class="title-mid"><span class="title-text">CodeWithArnix & GamerArnabXYZ</span></div>
-  <button class="ctrl" id="ctrl" onclick="toggle()">
-    <div class="cdot"></div>
-    <i class="fa-solid fa-pause" id="ctrlIco"></i>
-    <span id="ctrlLbl">idle</span>
-  </button>
-</div>
-
-<div class="tabs">
-  <div class="tab"><i class="fa-brands fa-html5"></i><span id="fname">index.html</span></div>
-</div>
-
-<div class="editor-wrap">
-  <div class="gutter" id="gutter"></div>
-  <div class="code-scroll" id="cs">
-    <div class="empty show" id="empty">
-      <i class="fa-solid fa-code big"></i>
-      <div class="empty-h">No code found</div>
-      <div class="empty-p">index.html pe code likho aur save karo</div>
-      <a class="back-a" href="index.html"><i class="fa-solid fa-arrow-left"></i>Back to editor</a>
+<div class="code-card">
+  <div class="card-header">
+    <div class="card-dots">
+      <div class="cdot" style="background:#ff5f57"></div>
+      <div class="cdot" style="background:#febc2e"></div>
+      <div class="cdot" style="background:#28c840"></div>
     </div>
-    <pre id="out" style="display:none"></pre>
+    <span style="font-size:11px;font-weight:800;color:var(--accent);letter-spacing:2px;text-transform:uppercase" id="fname">INDEX.HTML</span>
+    <div style="width:40px"></div>
+  </div>
+  
+  <div class="code-area" id="cs">
+    <pre id="out"></pre>
+  </div>
+
+  <div class="preview-wrap shut" id="prvWrap" style="height:0">
+     <iframe id="prvFrame" style="width:100%;height:100%;border:none"></iframe>
   </div>
 </div>
 
-<div class="preview-wrap open" id="prvWrap">
-  <div class="preview-bar">
-    <div class="pb-dots"><div class="pbd r"></div><div class="pbd y"></div><div class="pbd g"></div></div>
-    <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
-  </div>
-  <iframe id="prvFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+<!-- FLOATING UI -->
+<div class="ui-hide" style="position:fixed;top:20px;left:20px;display:flex;gap:10px;z-index:500">
+  <button class="ctrl" onclick="toggle()"><i class="fa-solid fa-pause" id="ctrlIco"></i><span id="ctrlLbl">Stop</span></button>
+  <button class="ctrl" onclick="togglePreview()"><i class="fa-solid fa-display"></i> Preview</button>
 </div>
 
-<div class="statusbar">
-  <div class="sb"><i class="fa-solid fa-circle-dot"></i><span id="sbSt">Idle</span></div>
-  <div class="sb"><i class="fa-solid fa-list-ol"></i><span id="sbLn">Ln 1</span></div>
-  <div class="sb-sp"></div>
-  <div class="sb"><i class="fa-solid fa-keyboard"></i><span id="sbIdx">0</span>/<span id="sbTot">0</span></div>
-  <div class="sb"><span id="sbPct">0%</span></div>
+<div class="rec-btn" onclick="toggleRec()" id="recBtn"><i class="fa-solid fa-video"></i></div>
+
+<div class="statusbar ui-hide">
+  <span id="sbSt">Typing...</span><div class="sb-sp"></div><span id="sbPct">0%</span>
 </div>
 
 <script>
 const LS='codepad_v1', LSP='codepad_speed';
 let code='',idx=0,running=false,paused=false,timer=null;
-const out=document.getElementById('out');
-const gut=document.getElementById('gutter');
-const cs=document.getElementById('cs');
+const out=document.getElementById('out'), cs=document.getElementById('cs');
 const cur=document.createElement('span'); cur.className='cur';
 const delays=[120,80,50,30,20,12,8,4,2,1];
 
-// Audio Context and Buffer for real sound
-let audioCtx = null;
-let clickBuffer = null;
-
+// Audio
+let audioCtx = null, clickBuffer = null;
 async function initAudio() {
   if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if(audioCtx.state === 'suspended') await audioCtx.resume();
-  
   if(!clickBuffer && getOpt('sound')) {
     try {
       const resp = await fetch('keyboard affect.wav');
-      const arrayBuf = await resp.arrayBuffer();
-      clickBuffer = await audioCtx.decodeAudioData(arrayBuf);
-    } catch(e) { console.error("Audio load error:", e); }
+      clickBuffer = await audioCtx.decodeAudioData(await resp.arrayBuffer());
+    } catch(e) { console.error(e); }
   }
 }
-
 function playClick() {
-  if(!getOpt('sound') || !clickBuffer) return;
-  if(!audioCtx) return;
-  const source = audioCtx.createBufferSource();
-  source.buffer = clickBuffer;
-  const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-  source.connect(gain);
-  gain.connect(audioCtx.destination);
-  source.start(0);
+  if(!getOpt('sound') || !clickBuffer || !audioCtx) return;
+  const source = audioCtx.createBufferSource(); source.buffer = clickBuffer;
+  const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+  source.connect(gain); gain.connect(audioCtx.destination); source.start(0);
 }
 
-// Fixed Syntax Highlighter: Using a single pass replacement to avoid double-highlighting
+// Logic
+const getOpt = (o) => localStorage.getItem('cp_'+o) === 'true';
+function delay(){
+  let d = delays[Math.min(Math.max(parseInt(localStorage.getItem(LSP)||'5'),1),10)-1];
+  return getOpt('turbo') ? Math.max(1, d / 2) : d;
+}
+
 function highlight(text) {
-  const escaped = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-  
+  const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const rules = [
     { reg: /(&lt;!--.*?--&gt;)/g, cls: 'com' },
     { reg: /(&lt;[!\/]?[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9-]+(?:=".*?")?)*[!\/]?&gt;)/g, cls: 'tag' },
     { reg: /(".*?")/g, cls: 'val' }
   ];
-
-  let result = escaped;
-  const placeholders = [];
-  
+  let result = escaped; const placeholders = [];
   rules.forEach((rule, i) => {
-    result = result.replace(rule.reg, (match) => {
+    result = result.replace(rule.reg, (m) => {
       const ph = `__PH_${i}_${placeholders.length}__`;
-      placeholders.push({ ph, html: `<span class="${rule.cls}">${match}</span>` });
+      placeholders.push({ ph, html: `<span class="${rule.cls}">${m}</span>` });
       return ph;
     });
   });
-
-  placeholders.forEach(p => {
-    result = result.replace(p.ph, p.html);
-  });
-
+  placeholders.forEach(p => result = result.replace(p.ph, p.html));
   return result;
-}
-
-// Creator Settings
-const getOpt = (o) => localStorage.getItem('cp_'+o) === 'true';
-
-function delay(){
-  let d = delays[Math.min(Math.max(parseInt(localStorage.getItem(LSP)||'5'),1),10)-1];
-  if(getOpt('turbo')) d = Math.max(1, d / 2); 
-  return d;
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
   code=localStorage.getItem(LS)||'';
-  document.getElementById('sbTot').textContent=code.length;
   if(code){
-    document.getElementById('empty').classList.remove('show');
-    out.style.display='block';
-    out.innerHTML = '';
-    out.appendChild(cur);
-    buildGut(1);
-    // User interaction required for audio
-    document.body.addEventListener('click', () => {
-      initAudio();
-    }, {once:true});
-    setTimeout(startTyping,500);
+    out.innerHTML = ''; out.appendChild(cur);
+    document.body.addEventListener('click', initAudio, {once:true});
+    setTimeout(startTyping, 1000);
   }
 });
 
-function startTyping(){
-  if(running||!code)return;
-  running=true;paused=false;setState('running');
-  tick();
-}
+function startTyping(){ running=true; tick(); }
 
 function tick(){
   if(!running || paused) return;
+  if(idx>=code.length){ running=false; setState('done'); confettiBurst(); return; }
   
-  if(idx>=code.length){
-    running=false;paused=false;
-    setState('done');updateSb();
-    renderPreview(code);
-    document.body.classList.remove('shake');
-    confettiBurst();
-    return;
-  }
-  
-  const ch=code[idx];
-  idx++;
-  
-  // Update output with highlight
+  const ch=code[idx]; idx++;
   const partial = code.slice(0, idx);
   out.innerHTML = highlight(partial);
   out.appendChild(cur);
-  
   playClick();
 
-  // Screen Shake effect
   if(getOpt('shake') && ch !== ' ' && ch !== '\n') {
     document.body.classList.add('shake');
     setTimeout(() => document.body.classList.remove('shake'), 40);
   }
   
-  cur.scrollIntoView({block:'nearest',behavior:'auto'});
-  if(ch==='\n'){
-    const l=(partial.match(/\n/g)||[]).length+1;
-    buildGut(l);
-  }
+  cur.scrollIntoView({block:'nearest',behavior:'smooth'});
   
-  // Optimized Preview Render: only on tags or every 100 chars
   if(ch==='>' || idx%100===0) renderPreview(partial);
-  
   updateSb();
   timer = setTimeout(tick, delay());
+}
+
+function toggle(){
+  if(paused){ paused=false; running=true; setState('running'); tick(); }
+  else { paused=true; setState('paused'); }
+}
+
+function toggleRec(){
+  document.body.classList.toggle('recording');
+  document.getElementById('recBtn').classList.toggle('active');
+}
+
+function renderPreview(html){ document.getElementById('prvFrame').srcdoc = html; }
+function togglePreview(){ 
+  const p = document.getElementById('prvWrap');
+  if(p.style.height==='0px'||!p.style.height){ p.style.height='25vh'; p.className='preview-wrap open'; }
+  else { p.style.height='0'; p.className='preview-wrap shut'; }
+}
+
+function setState(s){
+  document.getElementById('ctrlLbl').textContent = s==='paused'?'Resume':'Stop';
+  document.getElementById('sbSt').textContent = s.toUpperCase();
+}
+
+function updateSb(){
+  document.getElementById('sbPct').textContent = Math.round((idx/code.length)*100)+'%';
 }
 
 function confettiBurst(){
   for(let i=0; i<30; i++){
     const conf = document.createElement('div');
-    conf.style.cssText = `
-      position:fixed; left:50%; top:50%;
-      width:8px; height:8px; background:hsl(${Math.random()*360}, 100%, 50%);
-      border-radius:50%; z-index:10000;
-      pointer-events:none;
-      box-shadow: 0 0 10px currentColor;
-    `;
+    conf.style.cssText = `position:fixed; left:50%; top:50%; width:8px; height:8px; background:hsl(${Math.random()*360},100%,50%); border-radius:50%; z-index:10000; pointer-events:none;`;
     document.body.appendChild(conf);
-    const angle = Math.random() * Math.PI * 2;
-    const velocity = 5 + Math.random() * 10;
-    const vx = Math.cos(angle) * velocity;
-    const vy = Math.sin(angle) * velocity;
-    let x = 0, y = 0, opacity = 1;
-    const move = () => {
-      x += vx; y += vy; opacity -= 0.02;
-      conf.style.transform = `translate(${x}px, ${y}px)`;
-      conf.style.opacity = opacity;
-      if(opacity > 0) requestAnimationFrame(move);
-      else conf.remove();
-    };
+    const angle = Math.random()*Math.PI*2, vel = 5+Math.random()*10, vx = Math.cos(angle)*vel, vy = Math.sin(angle)*vel;
+    let x=0, y=0, op=1;
+    const move = () => { x+=vx; y+=vy; op-=0.02; conf.style.transform=`translate(${x}px,${y}px)`; conf.style.opacity=op; if(op>0) requestAnimationFrame(move); else conf.remove(); };
     move();
   }
 }
-
-function toggle(){
-  initAudio();
-  if(!running&&!paused){startTyping();return;}
-  if(!paused){
-    paused=true;clearTimeout(timer);timer=null;setState('paused');
-  } else {
-    paused=false;running=true;setState('running');tick();
-  }
-}
-
-function setState(s){
-  const el=document.getElementById('ctrl');
-  const ico=document.getElementById('ctrlIco');
-  const lbl=document.getElementById('ctrlLbl');
-  el.className='ctrl '+s;
-  if(s==='running'){ico.className='fa-solid fa-pause';lbl.textContent='Stop';document.getElementById('sbSt').textContent='Typing';}
-  else if(s==='paused'){ico.className='fa-solid fa-play';lbl.textContent='Resume';document.getElementById('sbSt').textContent='Paused';}
-  else if(s==='done'){ico.className='fa-solid fa-check';lbl.textContent='Done';document.getElementById('sbSt').textContent='Done';}
-  else{ico.className='fa-solid fa-pause';lbl.textContent='idle';document.getElementById('sbSt').textContent='Idle';}
-}
-
-function updateSb(){
-  const pct=code?Math.round((idx/code.length)*100):0;
-  document.getElementById('sbIdx').textContent=idx;
-  document.getElementById('sbPct').textContent=pct+'%';
-  const l=(code.slice(0,idx).match(/\n/g)||[]).length+1;
-  document.getElementById('sbLn').textContent='Ln '+l;
-}
-
-let lastLnCount = 0;
-function buildGut(n){
-  if(n === lastLnCount) return;
-  lastLnCount = n;
-  let html = '';
-  for(let i=1; i<=n; i++){
-    html += `<span class="ln">${i}</span>`;
-  }
-  gut.innerHTML = html;
-  gut.scrollTop=cs.scrollTop;
-}
-
-function renderPreview(html){
-  document.getElementById('prvFrame').srcdoc = html || '';
-}
-
-cs.addEventListener('scroll',()=>{gut.scrollTop=cs.scrollTop;});
 </script>
 </body>
 </html>

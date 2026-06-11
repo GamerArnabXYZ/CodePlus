@@ -3,264 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>CodePad Pro IDE</title>
+<title>CodePad Studio Pro</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#09090a;
-  --surface:rgba(22,22,24,0.7);
-  --surface2:rgba(28,28,30,0.8);
-  --surface3:rgba(44,44,46,0.9);
-  --border:rgba(255,255,255,0.06);
-  --border2:rgba(255,255,255,0.12);
+  --bg:#050506;
+  --surface:rgba(18,18,20,0.75);
+  --surface2:rgba(30,30,35,0.85);
+  --surface3:rgba(44,44,48,0.95);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.15);
+  --accent:linear-gradient(135deg, #007aff, #00c7ff);
+  --accent-solid:#007aff;
   --text:#ffffff;
   --text2:#f5f5f7;
   --text3:#8e8e93;
-  --accent:#007aff;
-  --accent-alt:#00c7ff;
-  --accent-dim:rgba(0,122,255,0.15);
   --green:#34c759;
   --red:#ff3b30;
   --orange:#ff9500;
   --mono:'JetBrains Mono',monospace;
-  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Text','Inter',sans-serif;
-  --radius:12px;
-  --glass:saturate(180%) blur(20px);
+  --sans:'Inter',-apple-system,sans-serif;
+  --radius:16px;
+  --glass:saturate(180%) blur(25px);
 }
 html,body{height:100%;overflow:hidden;background:var(--bg)}
-body{color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh;-webkit-font-smoothing:antialiased}
+body{
+  color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh;
+  background:radial-gradient(circle at top right, #1a1a2e, #050506);
+  -webkit-font-smoothing:antialiased;
+}
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:10px}
 
 /* ── TITLEBAR ── */
 .titlebar{
-  flex-shrink:0;height:54px;
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;
-  padding:0 20px;gap:14px;
+  flex-shrink:0;height:60px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
   backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
   z-index:100;
 }
 .wdots{display:flex;gap:8px}
-.wd{width:12px;height:12px;border-radius:50%;position:relative}
+.wd{width:12px;height:12px;border-radius:50%;}
 .wd.r{background:#ff5f57}.wd.y{background:#febc2e}.wd.g{background:#28c840}
 .title-mid{flex:1;display:flex;justify-content:center}
-.title-text{font-size:12px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;opacity:0.8;cursor:pointer}
-.title-text:hover{color:var(--accent)}
+.title-text{font-size:13px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:0.2s}
+.title-text:hover{color:var(--accent-solid)}
 .save-badge{
-  display:flex;align-items:center;gap:6px;
-  padding:5px 12px;border-radius:20px;
-  border:1px solid var(--border);background:var(--surface2);
-  font-size:10px;font-family:var(--mono);font-weight:500;
-  transition:all 0.3s;
+  display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;
+  background:var(--surface2);font-size:10px;font-family:var(--mono);font-weight:600;
 }
 .save-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
 .save-badge.saved{color:var(--green);background:rgba(52,199,89,0.1)}
 .save-badge.saved .dot{background:var(--green);box-shadow:0 0 8px var(--green)}
-.save-badge.unsaved{color:var(--orange);background:rgba(255,149,0,0.1)}
-.save-badge.unsaved .dot{background:var(--orange);box-shadow:0 0 8px var(--orange)}
 
 /* ── TABS ── */
 .tabs{
   flex-shrink:0;display:flex;align-items:stretch;
-  background:var(--bg);border-bottom:1px solid var(--border);
-  padding:0 10px;gap:4px;overflow-x:auto;scrollbar-width:none;
+  padding:8px 16px 0;gap:6px;overflow-x:auto;scrollbar-width:none;
 }
 .tab{
-  display:flex;align-items:center;gap:10px;
-  padding:0 18px;height:44px;
-  font-size:12px;font-family:var(--mono);font-weight:500;
-  color:var(--text3);cursor:pointer;white-space:nowrap;
-  position:relative;transition:all 0.3s;
+  display:flex;align-items:center;gap:10px;padding:0 22px;height:46px;
+  font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;
+  border-radius:12px 12px 0 0;transition:0.3s;
 }
-.tab i{font-size:14px}
-.tab::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transition:transform 0.3s}
-.tab.active{color:var(--text);background:rgba(255,255,255,0.05)}
-.tab.active::after{transform:scaleX(1)}
+.tab.active{color:var(--text);background:var(--surface);box-shadow:0 -4px 15px rgba(0,0,0,0.1)}
 
 /* ── TOOLBAR ── */
 .toolbar{
-  flex-shrink:0;display:flex;align-items:center;gap:10px;
-  padding:12px 16px;
+  flex-shrink:0;display:flex;align-items:center;padding:14px 20px;gap:12px;
   background:var(--surface);border-bottom:1px solid var(--border);
   backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
-  overflow-x:auto;scrollbar-width:none;
 }
 .tbtn{
-  background:var(--surface2);
-  border:1px solid var(--border);color:var(--text2);
-  padding:0 14px;height:36px;border-radius:10px;
-  font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;
-  cursor:pointer;transition:all 0.2s;flex-shrink:0;
+  height:40px;padding:0 16px;border-radius:12px;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text2);font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.tbtn:hover{background:var(--surface3);border-color:var(--border2)}
-.tbtn:active{transform:scale(0.96)}
-.tbtn.primary{background:linear-gradient(45deg, var(--accent), var(--accent-alt));color:#fff;border:none}
-.tbtn.sec{background:var(--accent-dim);color:var(--accent);border-color:rgba(0,122,255,0.2)}
-
-.t-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px}
-
-.c-opt{
-  display:flex;align-items:center;gap:8px;padding:0 12px;height:36px;
-  border-radius:18px;background:var(--surface2);border:1px solid var(--border);
-  font-size:11px;font-weight:600;color:var(--text3);white-space:nowrap;cursor:pointer;flex-shrink:0;
-}
-.c-opt input[type=checkbox]{
-  appearance:none;-webkit-appearance:none;
-  width:32px;height:18px;border-radius:10px;
-  background:#3a3a3c;position:relative;cursor:pointer;transition:0.3s;
-}
-.c-opt input[type=checkbox]::before{
-  content:'';position:absolute;top:2px;left:2px;
-  width:14px;height:14px;border-radius:50%;background:#fff;transition:0.3s;
-}
-.c-opt input[type=checkbox]:checked{background:var(--green)}
-.c-opt input[type=checkbox]:checked::before{left:16px}
+.tbtn:active{transform:scale(0.92)}
+.tbtn.primary{background:var(--accent);color:#fff;border:none;box-shadow:0 8px 20px rgba(0,122,255,0.25)}
 
 /* ── EDITOR ── */
-.editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden;background:var(--bg)}
-.gutter{
-  width:50px;flex-shrink:0;
-  background:rgba(255,255,255,0.01);border-right:1px solid var(--border);
-  padding-top:16px;overflow:hidden;
-}
-.ln{display:block;text-align:right;padding-right:12px;font-size:11px;line-height:24px;color:var(--text3);font-family:var(--mono);opacity:0.4}
+.editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden;background:rgba(0,0,0,0.2)}
+.gutter{width:55px;flex-shrink:0;border-right:1px solid var(--border);padding-top:20px;text-align:right;padding-right:14px;}
+.ln{display:block;font-size:11px;line-height:26px;color:var(--text3);font-family:var(--mono);opacity:0.3}
 textarea#code{
-  flex:1;background:transparent;color:var(--text2);
-  font-family:var(--mono);font-size:14px;line-height:24px;
-  padding:16px;border:none;outline:none;resize:none;
-  tab-size:2;caret-color:var(--accent);overflow:auto;white-space:pre-wrap;
-  word-break:break-word;
+  flex:1;background:transparent;color:var(--text2);font-family:var(--mono);font-size:15px;line-height:26px;
+  padding:20px;border:none;outline:none;resize:none;tab-size:2;caret-color:var(--accent-solid);
 }
 
 /* ── PREVIEW ── */
-.preview-wrap{
-  flex-shrink:0;overflow:hidden;
-  border-top:1px solid var(--border);background:#fff;
-  transition:height 0.4s cubic-bezier(0.4,0,0.2,1);
-  position:relative;
-}
+.preview-wrap{flex-shrink:0;background:#fff;border-top:1px solid var(--border);position:relative;transition:0.4s cubic-bezier(0.4,0,0.2,1)}
 .preview-wrap.open{height:40vh}
 .preview-wrap.shut{height:0}
-.preview-bar{
-  height:36px;background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 16px;gap:10px;
-}
-.pb-label{font-size:11px;font-weight:600;color:var(--text3);font-family:var(--sans);flex:1;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:0.5px}
-.pb-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:4px;display:flex;align-items:center;gap:6px}
-.pb-btn:hover{color:var(--accent)}
-.pb-close{color:var(--text3);cursor:pointer;background:none;border:none}
-.pb-close:hover{color:var(--red)}
-
-/* ── CONSOLE ── */
-.console-wrap{
-  position:absolute;bottom:0;left:0;right:0;height:0;
-  background:rgba(0,0,0,0.95);backdrop-filter:blur(10px);
-  border-top:1px solid var(--border);transition:height 0.3s;
-  overflow:hidden;z-index:50;
-}
-.console-wrap.show{height:160px}
-.console-bar{height:30px;background:rgba(255,255,255,0.05);display:flex;align-items:center;padding:0 12px;justify-content:space-between}
-.console-title{font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
-.console-out{padding:10px;font-family:var(--mono);font-size:11px;overflow-y:auto;height:calc(100% - 30px);color:#30d158;white-space:pre-wrap;word-break:break-all}
-.log-item{padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
-
-/* ── STATUSBAR ── */
-.statusbar{
-  flex-shrink:0;height:26px;
-  background:var(--surface);border-top:1px solid var(--border);
-  display:flex;align-items:center;padding:0 16px;gap:20px;
-  font-size:10px;font-weight:600;color:var(--text3);
-}
-.sb{display:flex;align-items:center;gap:6px}
-.sb i{font-size:9px;color:var(--accent)}
-.sb-sp{flex:1}
-
-/* ── MOBILE OPTIMIZATIONS ── */
-@media (max-width:600px){
-  .title-text{display:none}
-  .toolbar{padding:10px}
-  .tbtn{padding:0 10px;font-size:11px}
-  .preview-wrap.open{height:45vh}
-}
+.preview-bar{height:40px;background:var(--surface);display:flex;align-items:center;padding:0 20px;gap:12px;}
 
 /* ── SHEET ── */
-.overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  backdrop-filter:blur(10px);z-index:900;
-  display:flex;align-items:flex-end;
-  opacity:0;pointer-events:none;transition:opacity .3s;
-}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(15px);z-index:900;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:0.3s}
 .overlay.show{opacity:1;pointer-events:all}
 .sheet{
-  width:100%;max-width:500px;margin:0 auto;
-  background:var(--surface3);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
-  border:1px solid var(--border2);border-radius:24px 24px 0 0;
-  padding:16px 20px 40px;
-  transform:translateY(100%);
-  transition:transform .4s cubic-bezier(.4,0,.2,1);
+  width:100%;max-width:550px;margin:0 auto;background:var(--surface3);border-radius:28px 24px 0 0;
+  padding:20px 24px 48px;transform:translateY(100%);transition:0.4s cubic-bezier(.17,.67,.21,.99);
 }
 .overlay.show .sheet{transform:translateY(0)}
-.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
-.sheet-title{font-size:16px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:10px}
-.sheet-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
-.sheet-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .s-btn{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:14px;border-radius:14px;border:1px solid var(--border);
-  background:var(--surface2);font-size:14px;font-weight:600;
-  color:var(--text2);cursor:pointer;transition:0.2s;
+  height:54px;border-radius:18px;background:var(--surface2);color:var(--text);font-weight:700;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:0.2s;
 }
-.srow{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
-.srow span{font-size:14px;font-weight:600}
-.s-btn:active{transform:scale(0.96)}
-.s-btn-go{background:var(--accent);color:#fff;border:none}
-
-/* ── CONFIRM ── */
-.conf-bg{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);
-  backdrop-filter:blur(6px);z-index:1000;
-  display:flex;align-items:center;justify-content:center;padding:24px;
-  opacity:0;pointer-events:none;transition:opacity .2s;
-}
-.conf-bg.show{opacity:1;pointer-events:all}
-.conf{
-  background:var(--surface3);border:1px solid var(--border2);border-radius:20px;
-  padding:24px;width:100%;max-width:320px;
-  transform:scale(.9);transition:transform .3s cubic-bezier(.34,1.5,0.64,1);
-}
-.conf-bg.show .conf{transform:scale(1)}
-.conf-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
-.c-btn{padding:12px;border-radius:12px;font-weight:600;cursor:pointer;border:1px solid var(--border)}
-.c-no{background:var(--surface2);color:var(--text2)}
-.c-yes{background:rgba(255,59,48,0.1);color:var(--red);border-color:rgba(255,59,48,0.2)}
+.s-btn-go{background:var(--accent);border:none;box-shadow:0 10px 25px rgba(0,122,255,0.3)}
 
 /* ── TOAST ── */
 .toast{
-  position:fixed;bottom:30px;left:50%;
-  transform:translateX(-50%) translateY(100px);
-  background:var(--surface3);backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
-  border:1px solid var(--border2);border-radius:14px;padding:12px 24px;
-  display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;
-  z-index:2000;transition:transform .4s cubic-bezier(.34,1.5,0.64,1);
-  box-shadow:0 10px 40px rgba(0,0,0,0.5);
+  position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(120px);
+  background:var(--surface3);backdrop-filter:var(--glass);border-radius:20px;padding:14px 28px;
+  font-weight:700;box-shadow:0 15px 45px rgba(0,0,0,0.6);transition:0.4s cubic-bezier(.34,1.5,0.64,1);z-index:2000;
 }
 .toast.up{transform:translateX(-50%) translateY(0)}
-.t-green i{color:var(--green)}.t-red i{color:var(--red)}.t-blue i{color:var(--accent)}.t-orange i{color:var(--orange)}
 </style>
 </head>
 <body>
 
 <div class="titlebar">
   <div class="wdots"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div></div>
-  <div class="title-mid"><span class="title-text" id="prjName" onclick="renameProject()">CodePad Pro IDE</span></div>
+  <div class="title-mid"><span class="title-text" id="prjName" onclick="renameProject()">CodePad Studio Pro</span></div>
   <div class="save-badge" id="saveBadge"><div class="dot"></div><span id="saveTxt">saved</span></div>
 </div>
 
@@ -268,341 +139,193 @@ textarea#code{
   <div class="tab active"><i class="fa-brands fa-html5"></i>index.html</div>
   <div class="tab"><i class="fa-brands fa-css3-alt"></i>style.css</div>
   <div class="tab"><i class="fa-brands fa-js"></i>script.js</div>
-  <div class="tab"><i class="fa-solid fa-file-code"></i>other</div>
 </div>
 
 <div class="toolbar">
   <button class="tbtn primary" onclick="saveCode()"><i class="fa-solid fa-floppy-disk"></i>Save</button>
   <button class="tbtn" onclick="formatCode()"><i class="fa-solid fa-wand-sparkles"></i>Format</button>
   <button class="tbtn" onclick="copyCode()"><i class="fa-solid fa-copy"></i>Copy</button>
-  <button class="tbtn sec" onclick="openExport()"><i class="fa-solid fa-download"></i>Export</button>
+  <button class="tbtn" onclick="openExport()"><i class="fa-solid fa-download"></i></button>
   <button class="tbtn" onclick="openSettings()"><i class="fa-solid fa-gear"></i></button>
-  <button class="tbtn" onclick="askClear()"><i class="fa-solid fa-trash-can"></i></button>
   <button class="tbtn" onclick="togglePreview()"><i class="fa-solid fa-display"></i></button>
   <button class="tbtn" onclick="openSheet()"><i class="fa-solid fa-rocket"></i></button>
 </div>
 
 <div class="editor-wrap">
   <div class="gutter" id="gutter"></div>
-  <textarea id="code" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off"
-    placeholder="<!-- start coding... -->"></textarea>
+  <textarea id="code" spellcheck="false" autocorrect="off" autocapitalize="none" autocomplete="off" placeholder="<!-- Start your creation... -->"></textarea>
 </div>
 
 <div class="preview-wrap open" id="prvWrap">
   <div class="preview-bar">
-    <div class="pb-label"><i class="fa-solid fa-globe"></i>Preview</div>
-    <button class="pb-btn" onclick="toggleConsole()"><i class="fa-solid fa-terminal"></i>Console</button>
-    <button class="pb-close" onclick="closePreview()"><i class="fa-solid fa-xmark"></i></button>
+    <span style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;flex:1">Live Preview</span>
+    <button onclick="toggleConsole()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px"><i class="fa-solid fa-terminal"></i></button>
   </div>
-  <iframe id="prvFrame" sandbox="allow-scripts allow-same-origin"></iframe>
-  <div class="console-wrap" id="conWrap">
-    <div class="console-bar">
-      <div class="console-title">Debug Console</div>
-      <button class="pb-btn" onclick="clearConsole()"><i class="fa-solid fa-ban"></i></button>
+  <iframe id="prvFrame" style="width:100%;height:calc(100% - 40px);border:none"></iframe>
+  <div id="conWrap" style="position:absolute;bottom:0;left:0;right:0;height:0;background:#000;transition:0.3s;overflow:hidden">
+    <div style="height:30px;background:#111;display:flex;align-items:center;padding:0 15px;justify-content:space-between">
+      <span style="font-size:10px;font-weight:800;color:#666">CONSOLE</span>
+      <button onclick="clearConsole()" style="background:none;border:none;color:#666"><i class="fa-solid fa-ban"></i></button>
     </div>
-    <div class="console-out" id="conOut"></div>
+    <div id="conOut" style="padding:10px;font-family:var(--mono);font-size:11px;color:#30d158;overflow-y:auto;height:120px"></div>
   </div>
 </div>
 
-<div class="statusbar">
-  <div class="sb"><i class="fa-solid fa-circle-dot"></i><span id="sbLang">HTML</span></div>
-  <div class="sb"><i class="fa-solid fa-text-width"></i><span id="sbCh">0</span></div>
-  <div class="sb-sp"></div>
-  <div class="sb"><i class="fa-solid fa-list-ol"></i><span id="sbLn">Ln 1</span></div>
-  <div class="sb"><i class="fa-solid fa-database"></i><span>Storage</span></div>
+<div class="statusbar" style="height:28px;background:var(--surface);display:flex;align-items:center;padding:0 20px;font-size:10px;font-weight:700;color:var(--text3)">
+  <span id="sbLang">HTML</span><div style="flex:1"></div><span id="sbLn">Ln 1</span>
 </div>
 
-<!-- AUTO WRITE SHEET -->
+<!-- SHEETS -->
 <div class="overlay" id="overlay" onclick="bgClose(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto Write</div>
-    <div class="sheet-sub">Typing animation ke saath code present karo.</div>
-    <div class="sheet-btns">
-      <button class="s-btn" style="grid-column: span 2" onclick="launch()"><i class="fa-solid fa-rocket"></i>Launch Animation</button>
-    </div>
-    <button class="s-btn" style="margin-top:12px;width:100%" onclick="closeSheet()">Cancel</button>
+    <div class="sheet-sub">Video recording ke liye animation launch karein.</div>
+    <button class="s-btn s-btn-go" onclick="launch()" style="width:100%"><i class="fa-solid fa-rocket"></i>Launch Pro Studio</button>
+    <button class="s-btn" onclick="closeSheet()" style="width:100%;margin-top:12px">Cancel</button>
   </div>
 </div>
 
-<!-- EXPORT SHEET -->
 <div class="overlay" id="exportOverlay" onclick="bgCloseExport(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title"><i class="fa-solid fa-file-export"></i>Export Project</div>
-    <div class="sheet-sub">Project ko apne device par save karo.</div>
+    <div class="sheet-title"><i class="fa-solid fa-file-export"></i>Export</div>
     <div class="sheet-btns">
-      <button class="s-btn" onclick="downloadHTML()"><i class="fa-brands fa-html5"></i>Bundled HTML</button>
-      <button class="s-btn" onclick="downloadZIP()"><i class="fa-solid fa-file-zipper"></i>Project ZIP</button>
+      <button class="s-btn" onclick="downloadHTML()">Bundled HTML</button>
+      <button class="s-btn" onclick="downloadZIP()">Project ZIP</button>
     </div>
-    <button class="s-btn" style="margin-top:12px;width:100%" onclick="closeExport()">Cancel</button>
+    <button class="s-btn" onclick="closeExport()" style="width:100%;margin-top:12px">Cancel</button>
   </div>
 </div>
 
-<!-- SETTINGS SHEET -->
 <div class="overlay" id="settingsOverlay" onclick="bgCloseSettings(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title"><i class="fa-solid fa-gear"></i>IDE Settings</div>
-    <div class="sheet-sub">Editor experience ko customize karo.</div>
-    <div class="sheet-rows">
-      <div class="srow">
-        <span>Font Size</span>
-        <div style="display:flex;align-items:center;gap:10px">
-          <input type="range" id="fontSize" min="10" max="24" value="14" oninput="updateFontSize(this.value)">
-          <span id="fsVal" style="min-width:40px">14px</span>
-        </div>
-      </div>
-      <div class="srow">
-        <span>Line Numbers</span>
-        <input type="checkbox" id="showGut" checked onchange="toggleGutter(this.checked)">
+    <div class="sheet-title"><i class="fa-solid fa-gear"></i>Settings</div>
+    <div style="display:flex;flex-direction:column;gap:15px;margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:14px;font-weight:600">Font Size</span>
+        <input type="range" id="fontSize" min="12" max="22" value="15" oninput="updateFontSize(this.value)">
       </div>
     </div>
-    <button class="s-btn" style="margin-top:12px;width:100%" onclick="closeSettings()">Done</button>
+    <button class="s-btn" onclick="closeSettings()" style="width:100%;margin-top:24px">Done</button>
   </div>
 </div>
 
-<!-- CONFIRM -->
-<div class="conf-bg" id="confBg">
-  <div class="conf">
-    <div style="font-size:24px;color:var(--red);margin-bottom:10px"><i class="fa-solid fa-triangle-exclamation"></i></div>
-    <div style="font-size:16px;font-weight:700">Clear File?</div>
-    <div style="font-size:13px;color:var(--text3);margin-top:5px">Current file ka saara code delete ho jayega.</div>
-    <div class="conf-btns">
-      <button class="c-btn c-no" onclick="closeConf()">Nahi</button>
-      <button class="c-btn c-yes" onclick="doClean()">Haan, Clear</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"><i id="tIco" class="fa-solid fa-circle-check"></i><span id="tMsg"></span></div>
+<div class="toast" id="toast"><span></span></div>
 
 <script>
 const LS='codepad_v1_files', LSP='codepad_speed', LSC='codepad_current_tab', LSN='codepad_prj_name', LSS='codepad_settings';
 const ta=document.getElementById('code'), gut=document.getElementById('gutter');
-let prvOpen=true;
+let prvOpen=true, files = { 'index.html': '', 'style.css': '', 'script.js': '' }, currentTab = 'index.html';
 
-let files = { 'index.html': '', 'style.css': '', 'script.js': '', 'other': '' };
-let currentTab = 'index.html';
-
-// INIT
 window.addEventListener('DOMContentLoaded',()=>{
   const savedFiles = localStorage.getItem(LS);
   if(savedFiles) files = JSON.parse(savedFiles);
-  else {
-    const oldCode = localStorage.getItem('codepad_v1');
-    if(oldCode) { files['index.html'] = oldCode; localStorage.setItem(LS, JSON.stringify(files)); }
-  }
+  else { const old = localStorage.getItem('codepad_v1'); if(old){ files['index.html']=old; localStorage.setItem(LS, JSON.stringify(files)); } }
 
-  const savedName = localStorage.getItem(LSN) || 'CodePad Pro IDE';
-  document.getElementById('prjName').textContent = savedName;
-
+  document.getElementById('prjName').textContent = localStorage.getItem(LSN) || 'CodePad Studio Pro';
   currentTab = localStorage.getItem(LSC) || 'index.html';
   document.querySelectorAll('.tab').forEach(t => {
-    if(t.textContent.trim() === currentTab) t.classList.add('active');
-    else t.classList.remove('active');
+    if(t.textContent.trim()===currentTab) t.classList.add('active'); else t.classList.remove('active');
   });
 
-  const settings = JSON.parse(localStorage.getItem(LSS) || '{"fs":14, "gut":true}');
-  updateFontSize(settings.fs);
-  toggleGutter(settings.gut);
-  document.getElementById('fontSize').value = settings.fs;
-  document.getElementById('showGut').checked = settings.gut;
-
-  ta.value = files[currentTab] || '';
-  ta.value ? setSaved() : setUnsaved();
-
-  meta(); buildGut(); refreshPreview();
+  const s = JSON.parse(localStorage.getItem(LSS) || '{"fs":15}');
+  updateFontSize(s.fs); document.getElementById('fontSize').value = s.fs;
+  ta.value = files[currentTab] || ''; meta(); buildGut(); refreshPreview();
 });
 
-// TEXTAREA
-let asSave;
 ta.addEventListener('input',()=>{
-  setUnsaved(); files[currentTab] = ta.value;
+  files[currentTab] = ta.value;
+  localStorage.setItem(LS, JSON.stringify(files));
+  localStorage.setItem('codepad_v1', ta.value);
   meta(); buildGut(); refreshPreview();
-  clearTimeout(asSave);
-  asSave=setTimeout(()=>{
-    localStorage.setItem(LS, JSON.stringify(files));
-    localStorage.setItem('codepad_v1', ta.value); 
-    setSaved();
-  },1000);
 });
 
-ta.addEventListener('scroll',()=>{gut.scrollTop=ta.scrollTop});
-
-// Tab Switching
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
-    files[currentTab] = ta.value;
-    localStorage.setItem(LS, JSON.stringify(files));
     document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
     t.classList.add('active');
     currentTab = t.textContent.trim();
     localStorage.setItem(LSC, currentTab);
     ta.value = files[currentTab] || '';
     document.getElementById('sbLang').textContent = currentTab.split('.').pop().toUpperCase();
-    buildGut(); meta(); setSaved();
+    buildGut(); meta();
   });
-});
-
-ta.addEventListener('keydown',e=>{
-  if(e.key==='Tab'){
-    e.preventDefault();
-    const s=ta.selectionStart,en=ta.selectionEnd;
-    ta.value=ta.value.slice(0,s)+'  '+ta.value.slice(en);
-    ta.selectionStart=ta.selectionEnd=s+2;
-    ta.dispatchEvent(new Event('input')); 
-  }
 });
 
 function renameProject() {
-  const old = document.getElementById('prjName').textContent;
-  const n = prompt("Project ka naya naam rakho:", old);
-  if(n && n.trim()) {
-    document.getElementById('prjName').textContent = n;
-    localStorage.setItem(LSN, n);
-    toast('fa-pen','Name Updated!','t-blue');
-  }
+  const n = prompt("Naya naam:", document.getElementById('prjName').textContent);
+  if(n){ document.getElementById('prjName').textContent = n; localStorage.setItem(LSN, n); toast('Name Updated!'); }
 }
 
 function formatCode() {
-  const v = ta.value;
-  if(!v.trim()) return;
-  let formatted = '';
   let indent = 0;
-  const lines = v.split('\n');
-  lines.forEach(line => {
-    line = line.trim();
-    if(!line) return;
-    if (line.match(/^<\//) || line.match(/^\}/)) indent = Math.max(0, indent - 1);
-    formatted += '  '.repeat(indent) + line + '\n';
-    if ((line.match(/<[^\/!][^>]*[^\/]>$/) && !line.match(/<input|img|br|hr|link|meta/)) || line.match(/\{$/)) indent++;
-  });
-  ta.value = formatted.trim();
-  files[currentTab] = ta.value;
-  saveCode();
-  toast('fa-wand-magic-sparkles','Formatted!','t-green');
+  ta.value = ta.value.split('\n').map(l => {
+    l = l.trim(); if(!l) return '';
+    if(l.match(/^<\//) || l.match(/^\}/)) indent = Math.max(0, indent - 1);
+    const res = '  '.repeat(indent) + l;
+    if((l.match(/<[^\/!][^>]*[^\/]>$/) && !l.match(/<input|img|br|hr|link|meta/)) || l.match(/\{$/)) indent++;
+    return res;
+  }).join('\n');
+  files[currentTab] = ta.value; saveCode(); toast('Formatted!');
 }
 
-function setSaved(){document.getElementById('saveBadge').className='save-badge saved';document.getElementById('saveTxt').textContent='saved';}
-function setUnsaved(){document.getElementById('saveBadge').className='save-badge unsaved';document.getElementById('saveTxt').textContent='unsaved';}
-function meta(){
-  const v=ta.value;
-  document.getElementById('sbCh').textContent=v.length;
-  const l=v?v.split('\n').length:1;
-  document.getElementById('sbLn').textContent='Ln '+l;
-}
-
-let lastLnCount = 0;
+function saveCode(){ localStorage.setItem(LS, JSON.stringify(files)); toast('Saved!'); }
+function copyCode(){ navigator.clipboard.writeText(ta.value).then(()=>toast('Copied!')); }
+function meta(){ document.getElementById('sbLn').textContent = 'Ln ' + ta.value.split('\n').length; }
 function buildGut(){
   const count = ta.value.split('\n').length;
-  if(count === lastLnCount) return;
-  lastLnCount = count;
-  let html = '';
-  for(let i=1; i<=count; i++) html += `<span class="ln">${i}</span>`;
+  let html = ''; for(let i=1; i<=count; i++) html += `<span class="ln">${i}</span>`;
   gut.innerHTML = html;
-}
-
-function saveCode(){
-  files[currentTab] = ta.value;
-  localStorage.setItem(LS, JSON.stringify(files));
-  localStorage.setItem('codepad_v1', ta.value);
-  setSaved(); refreshPreview();
-}
-
-function copyCode(){
-  if(!ta.value.trim()){toast('fa-triangle-exclamation','Kuch nahi hai!','t-orange');return;}
-  navigator.clipboard.writeText(ta.value).then(()=>toast('fa-copy','Copied!','t-blue'));
-}
-
-function askClear(){if(!ta.value.trim()){toast('fa-circle-info','Already empty','');return;}document.getElementById('confBg').classList.add('show');}
-function closeConf(){document.getElementById('confBg').classList.remove('show');}
-function doClean(){
-  closeConf(); ta.value=''; files[currentTab] = '';
-  localStorage.setItem(LS, JSON.stringify(files));
-  meta(); buildGut(); setUnsaved(); refreshPreview();
-  toast('fa-trash-can','Cleared','t-red');
 }
 
 function refreshPreview(){
   if(!prvOpen) return;
-  let html = files['index.html'] || '';
-  const css = files['style.css'] || '';
-  const js = files['script.js'] || '';
-  const conScript = `<script>const _log=console.log;console.log=function(...args){window.parent.postMessage({type:'log',msg:args.join(' ')},'*');_log.apply(console,args);};window.onerror=function(m,u,l){window.parent.postMessage({type:'err',msg:m+" (Ln:"+l+")"},'*');};<\/script>`;
-  let combined = conScript + html;
-  if(css) combined += `<style>${css}</style>`;
-  if(js) combined += `<script>${js}<\/script>`;
+  const conScript = `<script>const _log=console.log;console.log=function(...args){window.parent.postMessage({type:'log',msg:args.join(' ')},'*');};window.onerror=function(m,u,l){window.parent.postMessage({type:'err',msg:m+" (Ln:"+l+")"},'*');};<\/script>`;
+  let combined = conScript + (files['index.html']||'');
+  if(files['style.css']) combined += `<style>${files['style.css']}</style>`;
+  if(files['script.js']) combined += `<script>${files['script.js']}<\/script>`;
   document.getElementById('prvFrame').srcdoc = combined;
 }
 
 window.addEventListener('message', e => {
-  if(e.data.type === 'log' || e.data.type === 'err') {
-    const out = document.getElementById('conOut');
-    const item = document.createElement('div');
-    item.className = 'log-item';
-    if(e.data.type === 'err') item.style.color = 'var(--red)';
-    item.textContent = `> ${e.data.msg}`;
-    out.appendChild(item);
-    out.scrollTop = out.scrollHeight;
+  if(e.data.type==='log' || e.data.type==='err'){
+    const item = document.createElement('div'); item.textContent = '> ' + e.data.msg;
+    if(e.data.type==='err') item.style.color='var(--red)';
+    document.getElementById('conOut').appendChild(item);
   }
 });
 
-function toggleConsole(){ document.getElementById('conWrap').classList.toggle('show'); }
+function toggleConsole(){ const c = document.getElementById('conWrap'); c.style.height = c.style.height==='150px'?'0':'150px'; }
 function clearConsole(){ document.getElementById('conOut').innerHTML = ''; }
-function togglePreview(){ prvOpen ? closePreview() : openPreview(); }
-function openPreview(){ document.getElementById('prvWrap').className='preview-wrap open'; prvOpen=true; refreshPreview(); }
-function closePreview(){ document.getElementById('prvWrap').className='preview-wrap shut'; prvOpen=false; }
-
+function togglePreview(){ prvOpen = !prvOpen; document.getElementById('prvWrap').className = prvOpen?'preview-wrap open':'preview-wrap shut'; }
 function openSettings(){ document.getElementById('settingsOverlay').classList.add('show'); }
 function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('show'); }
-function bgCloseSettings(e){ if(e.target===document.getElementById('settingsOverlay'))closeSettings(); }
-function updateFontSize(v) {
-  ta.style.fontSize = v + 'px';
-  document.getElementById('fsVal').textContent = v + 'px';
-  const s = JSON.parse(localStorage.getItem(LSS) || '{"fs":14, "gut":true}');
-  s.fs = v; localStorage.setItem(LSS, JSON.stringify(s));
-}
-function toggleGutter(v) {
-  document.getElementById('gutter').style.display = v ? 'block' : 'none';
-  const s = JSON.parse(localStorage.getItem(LSS) || '{"fs":14, "gut":true}');
-  s.gut = v; localStorage.setItem(LSS, JSON.stringify(s));
-}
-
+function updateFontSize(v){ ta.style.fontSize = v+'px'; localStorage.setItem(LSS, JSON.stringify({fs:v})); }
 function openExport(){ document.getElementById('exportOverlay').classList.add('show'); }
 function closeExport(){ document.getElementById('exportOverlay').classList.remove('show'); }
-function bgCloseExport(e){ if(e.target===document.getElementById('exportOverlay'))closeExport(); }
+function openSheet(){ document.getElementById('overlay').classList.add('show'); }
+function closeSheet(){ document.getElementById('overlay').classList.remove('show'); }
+function launch(){ window.open('auto.html','_blank'); }
+function bgClose(e){ if(e.target.id==='overlay') closeSheet(); }
+function bgCloseExport(e){ if(e.target.id==='exportOverlay') closeExport(); }
+function bgCloseSettings(e){ if(e.target.id==='settingsOverlay') closeSettings(); }
+
+function toast(msg){
+  const t = document.getElementById('toast'); t.querySelector('span').textContent = msg;
+  t.classList.add('up'); setTimeout(()=>t.classList.remove('up'), 2000);
+}
+
 function downloadHTML(){
-  const css = files['style.css'] || '', js = files['script.js'] || '', html = files['index.html'] || '';
-  const bundled = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n${css}\n</style>\n</head>\n<body>\n${html}\n<script>\n${js}\n<\/script>\n</body>\n</html>`;
-  const blob = new Blob([bundled], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'index.html'; a.click();
-  closeExport(); toast('fa-check','HTML Exported!','t-green');
+  const combined = `<!DOCTYPE html><html><head><style>${files['style.css']||''}</style></head><body>${files['index.html']||''}<script>${files['script.js']||''}<\/script></body></html>`;
+  const blob = new Blob([combined], {type:'text/html'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'index.html'; a.click();
 }
 async function downloadZIP(){
-  const zip = new JSZip();
-  zip.file("index.html", files['index.html']);
-  zip.file("style.css", files['style.css']);
-  zip.file("script.js", files['script.js']);
+  const zip = new JSZip(); zip.file("index.html", files['index.html']); zip.file("style.css", files['style.css']); zip.file("script.js", files['script.js']);
   const content = await zip.generateAsync({type:"blob"});
-  const url = URL.createObjectURL(content);
-  const a = document.createElement('a'); a.href = url; a.download = 'project.zip'; a.click();
-  closeExport(); toast('fa-file-zipper','ZIP Exported!','t-green');
-}
-
-function openSheet(){document.getElementById('overlay').classList.add('show');}
-function closeSheet(){document.getElementById('overlay').classList.remove('show');}
-function bgClose(e){if(e.target===document.getElementById('overlay'))closeSheet();}
-function launch(){ saveCode(); closeSheet(); window.open('auto.html','_blank'); }
-
-let tT;
-function toast(ico,msg,cls){
-  const el=document.getElementById('toast');
-  document.getElementById('tIco').className='fa-solid '+ico;
-  document.getElementById('tMsg').textContent=msg;
-  el.className='toast up'+(cls?' '+cls:'');
-  clearTimeout(tT);tT=setTimeout(()=>el.className='toast',2400);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = 'project.zip'; a.click();
 }
 </script>
 </body>

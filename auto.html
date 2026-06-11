@@ -237,8 +237,9 @@ function tick(){
   if(ch==='>' || idx%100===0) renderPreview(code.slice(0,idx));
   updateSb();
   
-  // Extended Speed Logic (20 levels)
-  const spdIdx = Math.min(Math.max(parseInt(localStorage.getItem(LSP)||'5'),1),20)-1;
+  // Speed Logic Fix: Always fetch current setting from localStorage
+  const spdSetting = parseInt(localStorage.getItem(LSP)||'5');
+  const spdIdx = Math.min(Math.max(spdSetting, 1), 20) - 1;
   let delay = delays[spdIdx];
   if(localStorage.getItem('cp_turbo')==='true') delay = Math.max(0, delay/2);
   

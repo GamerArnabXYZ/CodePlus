@@ -212,6 +212,15 @@ textarea#code{
           <span id="spdNum" style="font-size:13px;font-weight:800;color:var(--accent-solid);min-width:20px">5</span>
         </div>
       </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <span style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Recording Layout</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <button class="tbtn" id="lay_classic" onclick="setLay('classic')" style="height:34px;font-size:11px">Classic</button>
+          <button class="tbtn" id="lay_focus" onclick="setLay('focus')" style="height:34px;font-size:11px">Focus</button>
+          <button class="tbtn" id="lay_wide" onclick="setLay('wide')" style="height:34px;font-size:11px">Wide</button>
+        </div>
+      </div>
       
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <label class="c-opt"><span>Turbo</span><input type="checkbox" id="turbo" checked></label>
@@ -255,7 +264,7 @@ textarea#code{
 <div class="toast" id="toast"><span></span></div>
 
 <script>
-const LS='codepad_v1_files', LSP='codepad_speed', LSC='codepad_current_tab', LSN='codepad_prj_name', LSS='codepad_settings';
+const LS='codepad_v1_files', LSP='codepad_speed', LSC='codepad_current_tab', LSN='codepad_prj_name', LSS='codepad_settings', LSL='codepad_layout';
 const ta=document.getElementById('code'), gut=document.getElementById('gutter');
 let prvOpen=true, files = { 'index.html': '', 'style.css': '', 'script.js': '' }, currentTab = 'index.html';
 
@@ -276,6 +285,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   const spd = localStorage.getItem(LSP) || '5';
   document.getElementById('spd').value = spd;
   document.getElementById('spdNum').textContent = spd;
+
+  setLay(localStorage.getItem(LSL) || 'classic');
 
   ['turbo','shake','sound','particles'].forEach(o => {
     const val = localStorage.getItem('cp_'+o);
@@ -305,6 +316,12 @@ document.querySelectorAll('.tab').forEach(t => {
 });
 
 function updateSpeed(v) { document.getElementById('spdNum').textContent = v; localStorage.setItem(LSP, v); }
+
+function setLay(l) {
+  ['classic','focus','wide'].forEach(x => document.getElementById('lay_'+x).classList.remove('primary'));
+  document.getElementById('lay_'+l).classList.add('primary');
+  localStorage.setItem(LSL, l);
+}
 
 function renameProject() {
   const n = prompt("Naya naam:", document.getElementById('prjName').textContent);

@@ -24,7 +24,6 @@ body{
   color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
 }
 
-/* Moving Grid */
 .grid-bg {
   position: fixed; inset: 0;
   background-image: linear-gradient(rgba(0,210,255,0.05) 1px, transparent 1px),
@@ -40,6 +39,7 @@ body{
   backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
   box-shadow:0 30px 100px rgba(0,0,0,0.8), var(--neon-glow);
   display:flex; flex-direction:column;
+  transition:0.5s cubic-bezier(0.4,0,0.2,1);
   animation:card-float 6s ease-in-out infinite;
 }
 @keyframes card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
@@ -75,15 +75,23 @@ body.recording .ui-hide{opacity:0; pointer-events:none;}
   width:64px; height:64px; border-radius:50%;
   background:rgba(255,59,48,0.15); border:2px solid #ff3b30;
   display:flex; align-items:center; justify-content:center;
-  color:#ff3b30; cursor:pointer; z-index:1000; transition:0.4s cubic-bezier(0.17,0.67,0.83,0.67);
+  color:#ff3b30; cursor:pointer; z-index:1000; transition:0.4s;
 }
 .rec-btn.active{background:#ff3b30; color:#fff; box-shadow:0 0 35px #ff3b30; transform:scale(0.9);}
+
+/* ── SWITCHER BTN (Focus Mode) ── */
+#switchBtn{
+  position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
+  display:none; z-index:1000;
+}
 
 /* ── SYNTAX COLORS ── */
 .tag{color:#ff79c6; text-shadow:0 0 10px rgba(255,121,198,0.4)}
 .attr{color:#50fa7b}
 .val{color:#f1fa8c}
 .com{color:#6272a4; font-style:italic}
+
+pre#out{ white-space:pre-wrap; word-break:break-all; } /* LINE WRAP */
 
 .cur{
   display:inline-block; width:8px; height:1.2em;
@@ -93,7 +101,18 @@ body.recording .ui-hide{opacity:0; pointer-events:none;}
 }
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
-.preview-wrap{width:100%; overflow:hidden; background:#fff; border-top:1px solid var(--border); transition:0.4s;}
+.preview-wrap{width:100%; overflow:hidden; background:#fff; border-top:1px solid var(--border); transition:0.5s cubic-bezier(0.4,0,0.2,1);}
+
+/* Layout Adjustments */
+body.lay-wide .code-card { height:90vh; max-width:1000px; }
+body.lay-wide .code-area { flex:0.4; }
+body.lay-wide #prvWrap { flex:1; height:auto !important; }
+
+body.lay-focus .preview-wrap { border-top:none; height:100% !important; display:none; }
+body.lay-focus.show-prv .code-area { display:none; }
+body.lay-focus.show-prv .preview-wrap { display:block; }
+body.lay-focus #switchBtn { display:flex; }
+
 .statusbar{position:fixed; bottom:0; left:0; right:0; height:30px; background:rgba(0,0,0,0.5); display:flex; align-items:center; padding:0 20px; font-size:10px; font-weight:800; color:#444;}
 .shake { animation: shake 0.1s linear infinite; }
 @keyframes shake { 0%{transform:translate(0,0)} 25%{transform:translate(1px,1px)} 50%{transform:translate(-1px,1px)} 75%{transform:translate(1px,-1px)} 100%{transform:translate(0,0)} }
@@ -127,8 +146,12 @@ body.recording .ui-hide{opacity:0; pointer-events:none;}
 
 <div class="ui-hide" style="position:fixed;top:30px;left:30px;display:flex;gap:12px;z-index:500">
   <button class="ctrl" onclick="toggle()"><i class="fa-solid fa-pause" id="ctrlIco"></i><span id="ctrlLbl">Stop</span></button>
-  <button class="ctrl" onclick="togglePreview()"><i class="fa-solid fa-display"></i> Preview</button>
+  <button class="ctrl" id="prvToggle" onclick="togglePreview()"><i class="fa-solid fa-display"></i> Preview</button>
 </div>
+
+<button class="ctrl ui-hide" id="switchBtn" onclick="focusSwitch()">
+  <i class="fa-solid fa-rotate"></i> <span id="swTxt">Show Preview</span>
+</button>
 
 <div class="rec-btn" onclick="toggleRec()" id="recBtn"><i class="fa-solid fa-video"></i></div>
 
@@ -137,7 +160,7 @@ body.recording .ui-hide{opacity:0; pointer-events:none;}
 </div>
 
 <script>
-const LS='codepad_v1', LSP='codepad_speed';
+const LS='codepad_v1', LSP='codepad_speed', LSL='codepad_layout';
 let code='',idx=0,running=false,paused=false,timer=null;
 const out=document.getElementById('out'), cs=document.getElementById('cs');
 const cur=document.createElement('span'); cur.className='cur';
@@ -182,6 +205,12 @@ function highlight(text) {
 
 window.addEventListener('DOMContentLoaded',()=>{
   code=localStorage.getItem(LS)||'';
+  const layout = localStorage.getItem(LSL) || 'classic';
+  document.body.classList.add('lay-' + layout);
+  
+  if(layout === 'wide') { document.getElementById('prvWrap').style.height = 'auto'; }
+  if(layout === 'focus') { document.getElementById('prvToggle').style.display = 'none'; }
+
   if(code){
     out.innerHTML = ''; out.appendChild(cur);
     document.body.addEventListener('click', initAudio, {once:true});
@@ -220,11 +249,18 @@ function toggle(){
 }
 function toggleRec(){ document.body.classList.toggle('recording'); document.getElementById('recBtn').classList.toggle('active'); }
 function renderPreview(html){ document.getElementById('prvFrame').srcdoc = html; }
+
 function togglePreview(){ 
   const p = document.getElementById('prvWrap');
-  if(p.style.height==='0px'||!p.style.height){ p.style.height='25vh'; }
+  if(p.style.height==='0px'||!p.style.height){ p.style.height='30vh'; }
   else { p.style.height='0'; }
 }
+
+function focusSwitch() {
+  const isPrv = document.body.classList.toggle('show-prv');
+  document.getElementById('swTxt').textContent = isPrv ? 'Show Code' : 'Show Preview';
+}
+
 function setState(s){
   document.getElementById('ctrlLbl').textContent = s==='paused'?'Resume':'Stop';
   document.getElementById('ctrlIco').className = s==='paused'?'fa-solid fa-play':'fa-solid fa-pause';

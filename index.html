@@ -272,27 +272,58 @@ textarea#code{
 <div class="toast" id="toast"><i id="tIco" class="fa-solid fa-circle-check"></i><span id="tMsg"></span></div>
 
 <script>
-const LS='codepad_v1', LSP='codepad_speed';
+const LS='codepad_v1_files', LSP='codepad_speed', LSC='codepad_current_tab';
 const ta=document.getElementById('code'), gut=document.getElementById('gutter');
 let prvOpen=true;
 
+// File Structure: { 'index.html': '', 'style.css': '', 'script.js': '', 'other': '' }
+let files = {
+  'index.html': '',
+  'style.css': '',
+  'script.js': '',
+  'other': ''
+};
+let currentTab = 'index.html';
+
 // INIT
 window.addEventListener('DOMContentLoaded',()=>{
-  const v=localStorage.getItem(LS)||'';
-  ta.value=v; v?setSaved():setUnsaved();
-  const s=localStorage.getItem(LSP)||'5';
-  document.getElementById('spd').value=s;
-  document.getElementById('spdNum').textContent=s;
+  // Load files
+  const savedFiles = localStorage.getItem(LS);
+  if(savedFiles) files = JSON.parse(savedFiles);
+  else {
+    // Migration for old single-file users
+    const oldCode = localStorage.getItem('codepad_v1');
+    if(oldCode) {
+      files['index.html'] = oldCode;
+      localStorage.setItem(LS, JSON.stringify(files));
+    }
+  }
+
+  // Load current tab
+  currentTab = localStorage.getItem(LSC) || 'index.html';
+  
+  // Update UI Tabs
+  document.querySelectorAll('.tab').forEach(t => {
+    const name = t.textContent.trim();
+    if(name === currentTab) t.classList.add('active');
+    else t.classList.remove('active');
+  });
+
+  ta.value = files[currentTab];
+  files[currentTab] ? setSaved() : setUnsaved();
+
+  const s = localStorage.getItem(LSP) || '5';
+  document.getElementById('spd').value = s;
+  document.getElementById('spdNum').textContent = s;
   
   // Creator Options Init
   const opts = ['turbo','shake','sound','particles'];
   opts.forEach(o => {
     const el = document.getElementById(o);
     const val = localStorage.getItem('cp_'+o);
-    // Default values if not set: turbo, shake, particles = true; sound = true (since user wants it)
     if(val === null) {
-      el.checked = true;
-      localStorage.setItem('cp_'+o, 'true');
+      el.checked = (o !== 'sound'); // Default off for sound, others on
+      localStorage.setItem('cp_'+o, el.checked);
     } else {
       el.checked = val === 'true';
     }
@@ -308,12 +339,43 @@ window.addEventListener('DOMContentLoaded',()=>{
 // TEXTAREA
 let asSave;
 ta.addEventListener('input',()=>{
-  setUnsaved(); meta(); buildGut();
+  setUnsaved(); 
+  files[currentTab] = ta.value;
+  meta(); buildGut();
   refreshPreview();
   clearTimeout(asSave);
-  asSave=setTimeout(()=>{localStorage.setItem(LS,ta.value);setSaved();},1400);
+  asSave=setTimeout(()=>{
+    localStorage.setItem(LS, JSON.stringify(files));
+    // Compatibility for auto.html (uses current tab code)
+    localStorage.setItem('codepad_v1', ta.value);
+    setSaved();
+  },1000);
 });
+
 ta.addEventListener('scroll',()=>{gut.scrollTop=ta.scrollTop});
+
+// Tab Switching
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    // Save current before switching
+    files[currentTab] = ta.value;
+    localStorage.setItem(LS, JSON.stringify(files));
+
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    
+    currentTab = t.textContent.trim();
+    localStorage.setItem(LSC, currentTab);
+    
+    // Update Editor
+    ta.value = files[currentTab] || '';
+    document.getElementById('sbLang').textContent = currentTab.split('.').pop().toUpperCase();
+    
+    buildGut();
+    meta();
+    setSaved();
+  });
+});
 
 ta.addEventListener('keydown',e=>{
   if(e.key==='Tab'){
@@ -321,7 +383,7 @@ ta.addEventListener('keydown',e=>{
     const s=ta.selectionStart,en=ta.selectionEnd;
     ta.value=ta.value.slice(0,s)+'  '+ta.value.slice(en);
     ta.selectionStart=ta.selectionEnd=s+2;
-    ta.dispatchEvent(new Event('input')); // Trigger preview & save
+    ta.dispatchEvent(new Event('input')); 
   }
   if(e.key==='Enter'){
     const s=ta.selectionStart;
@@ -374,7 +436,14 @@ function buildGut(){
   gut.innerHTML = html;
 }
 
-function saveCode(){localStorage.setItem(LS,ta.value);setSaved();refreshPreview();toast('fa-floppy-disk','Saved','t-green');}
+function saveCode(){
+  files[currentTab] = ta.value;
+  localStorage.setItem(LS, JSON.stringify(files));
+  localStorage.setItem('codepad_v1', ta.value);
+  setSaved();
+  refreshPreview();
+  toast('fa-floppy-disk','All Files Saved','t-green');
+}
 
 function copyCode(){
   if(!ta.value.trim()){toast('fa-triangle-exclamation','Kuch copy karne ko hai hi nahi!','t-orange');return;}
@@ -385,11 +454,29 @@ function copyCode(){
 
 function askClear(){if(!ta.value.trim()){toast('fa-circle-info','Already empty','');return;}document.getElementById('confBg').classList.add('show');}
 function closeConf(){document.getElementById('confBg').classList.remove('show');}
-function doClean(){closeConf();ta.value='';localStorage.removeItem(LS);meta();buildGut();setUnsaved();refreshPreview();toast('fa-trash-can','Cleared','t-red');}
+function doClean(){
+  closeConf();
+  ta.value='';
+  files[currentTab] = '';
+  localStorage.setItem(LS, JSON.stringify(files));
+  localStorage.removeItem('codepad_v1');
+  meta();buildGut();setUnsaved();refreshPreview();
+  toast('fa-trash-can','Current File Cleared','t-red');
+}
 
 function refreshPreview(){
   if(!prvOpen) return;
-  document.getElementById('prvFrame').srcdoc = ta.value || '';
+  
+  // Logic: Combine HTML + CSS + JS for index.html tab preview
+  let html = files['index.html'] || '';
+  const css = files['style.css'] || '';
+  const js = files['script.js'] || '';
+  
+  let combined = html;
+  if(css) combined += `<style>${css}</style>`;
+  if(js) combined += `<script>${js}<\/script>`;
+  
+  document.getElementById('prvFrame').srcdoc = combined;
 }
 function togglePreview(){prvOpen?closePreview():openPreview();}
 function openPreview(){
@@ -409,7 +496,8 @@ function closeSheet(){document.getElementById('overlay').classList.remove('show'
 function bgClose(e){if(e.target===document.getElementById('overlay'))closeSheet();}
 function launch(){
   if(!ta.value.trim()){closeSheet();toast('fa-triangle-exclamation','Koi code nahi!','t-orange');return;}
-  localStorage.setItem(LS,ta.value);setSaved();closeSheet();window.open('auto.html','_blank');
+  saveCode();
+  closeSheet();window.open('auto.html','_blank');
 }
 
 let tT;
@@ -420,12 +508,6 @@ function toast(ico,msg,cls){
   el.className='toast up'+(cls?' '+cls:'');
   clearTimeout(tT);tT=setTimeout(()=>{el.className='toast';},2400);
 }
-
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  document.getElementById('sbLang').textContent=t.textContent.trim();
-}));
 </script>
 </body>
 </html>

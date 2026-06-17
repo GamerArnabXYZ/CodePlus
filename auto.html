@@ -11,155 +11,148 @@
   --bg:#020204;
   --accent:#00d2ff;
   --accent-alt:#3a7bd5;
-  --card-bg:rgba(15,15,20,0.6);
+  --card-bg:rgba(15,15,20,0.65);
   --border:rgba(0,210,255,0.3);
   --text:#ffffff;
   --glass:blur(40px) saturate(200%);
   --neon-glow:0 0 20px rgba(0,210,255,0.4), 0 0 40px rgba(0,210,255,0.2);
 }
-html,body{height:100%;overflow:hidden;background:var(--bg)}
+html,body{height:100%;overflow:hidden;background:var(--bg);perspective:1000px;}
 body{
   background:radial-gradient(circle at center, #0a0a1a 0%, #020204 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
 }
 
-.grid-bg {
-  position: fixed; inset: 0;
-  background-image: linear-gradient(rgba(0,210,255,0.05) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(0,210,255,0.05) 1px, transparent 1px);
-  background-size: 50px 50px; z-index: -1; opacity: 0.2;
+/* ── INTRO GLITCH ── */
+.glitch-overlay {
+  position:fixed; inset:0; background:#000; z-index:9999;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:20px; transition:0.8s cubic-bezier(0.8, 0, 0.2, 1);
+}
+.glitch-overlay.hide { opacity:0; pointer-events:none; }
+.glitch-text { font-family:'JetBrains Mono'; font-weight:900; font-size:24px; letter-spacing:8px; color:var(--accent); text-transform:uppercase; animation:glitch 0.4s infinite; }
+@keyframes glitch {
+  0% { transform: translate(0); text-shadow: 2px 0 red, -2px 0 blue; }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); text-shadow: -2px 0 red, 2px 0 blue; }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
 }
 
 /* ── CINEMATIC CARD ── */
 .code-card{
-  width:88%; max-width:800px; height:65vh; /* Reduced height for top/bottom space */
+  width:90%; max-width:850px; height:68vh;
   background:var(--card-bg); border:1px solid var(--border);
-  border-radius:28px; position:relative; overflow:hidden;
+  border-radius:32px; position:relative; overflow:hidden;
   backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
-  box-shadow:0 30px 100px rgba(0,0,0,0.8), var(--neon-glow);
+  box-shadow:0 40px 120px rgba(0,0,0,0.9), var(--neon-glow);
   display:flex; flex-direction:column;
-  transition:0.5s cubic-bezier(0.4,0,0.2,1);
-  animation:card-float 6s ease-in-out infinite;
-  margin:60px 0; /* Vertical Safe Zone */
+  transition:0.1s linear; /* Smooth tilt */
+  transform-style:preserve-3d;
+  margin:60px 0;
 }
-@keyframes card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 
 .card-header{
-  height:50px; padding:0 24px; background:rgba(0,0,0,0.4);
+  height:56px; padding:0 28px; background:rgba(0,0,0,0.5);
   display:flex; align-items:center; justify-content:space-between;
   border-bottom:1px solid var(--border);
 }
-.card-dots{display:flex; gap:10px;}
-.cdot{width:10px; height:10px; border-radius:50%;}
+.card-dots{display:flex; gap:12px;}
+.cdot{width:12px; height:12px; border-radius:50%;}
 
 .code-area{
-  flex:1; padding:28px; overflow-y:auto; scrollbar-width:none;
-  font-family:'JetBrains Mono', monospace; font-size:15px; line-height:1.7;
+  flex:1; padding:35px; overflow-y:auto; scrollbar-width:none;
+  font-family:'JetBrains Mono', monospace; font-size:16px; line-height:1.9;
 }
 .code-area::-webkit-scrollbar{display:none;}
-
-/* ── UI ELEMENTS ── */
-.ctrl{
-  padding:0 18px; height:36px; border-radius:18px;
-  background:rgba(255,255,255,0.05); border:1px solid var(--border);
-  color:var(--accent); font-size:10px; font-weight:800; cursor:pointer;
-  display:flex; align-items:center; gap:8px; transition:0.3s;
-  backdrop-filter:blur(10px);
-}
 
 /* ── GHOST RECORDING MODE ── */
 body.recording .ui-hide, body.recording .rec-btn { opacity:0; pointer-events:none; visibility:hidden; }
 
 .rec-btn{
-  position:fixed; bottom:40px; right:30px;
-  width:64px; height:64px; border-radius:50%;
-  background:rgba(255,59,48,0.15); border:2px solid #ff3b30;
+  position:fixed; bottom:40px; right:40px;
+  width:72px; height:72px; border-radius:50%;
+  background:rgba(255,59,48,0.2); border:2px solid #ff3b30;
   display:flex; align-items:center; justify-content:center;
   color:#ff3b30; cursor:pointer; z-index:1000; transition:0.4s;
+  font-size:24px;
 }
 
-/* ── SYNTAX COLORS ── */
-.tag{color:#ff79c6; text-shadow:0 0 10px rgba(255,121,198,0.4)}
-.attr{color:#50fa7b}
+/* ── SYNTAX COLORS (Vibrant) ── */
+.tag{color:#ff79c6; text-shadow:0 0 15px rgba(255,121,198,0.5)}
+.attr{color:#50fa7b; text-shadow:0 0 10px rgba(80,250,123,0.3)}
 .val{color:#f1fa8c}
 .com{color:#6272a4; font-style:italic}
 
 pre#out{ white-space:pre-wrap; word-break:break-all; }
 
 .cur{
-  display:inline-block; width:8px; height:1.2em;
+  display:inline-block; width:10px; height:1.2em;
   background:var(--accent); vertical-align:text-bottom;
   animation:cur 1s step-start infinite;
-  box-shadow:var(--neon-glow); border-radius:2px; margin-left:2px;
+  box-shadow:0 0 15px var(--accent); border-radius:2px; margin-left:2px;
 }
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
-.preview-wrap{width:100%; overflow:hidden; background:#fff; border-top:1px solid var(--border); transition:0.5s;}
+.preview-wrap{width:100%; overflow:hidden; background:#fff; border-top:1px solid var(--border); transition:0.6s cubic-bezier(0.4,0,0.2,1);}
 
-/* Layouts */
-body.lay-wide .code-card { height:75vh; max-width:950px; }
-body.lay-wide .code-area { flex:0.4; }
-body.lay-wide #prvWrap { flex:1; height:auto !important; }
-body.lay-focus .preview-wrap { display:none; height:100% !important; border:none; }
-body.lay-focus.show-prv .code-area { display:none; }
-body.lay-focus.show-prv .preview-wrap { display:block; }
+/* Floating BG Elements */
+.bg-glow {
+  position:fixed; width:400px; height:400px; border-radius:50%;
+  background:radial-gradient(circle, rgba(0,210,255,0.1) 0%, transparent 70%);
+  filter:blur(100px); z-index:-1; pointer-events:none;
+}
 
-.statusbar{position:fixed; bottom:0; left:0; right:0; height:26px; background:rgba(0,0,0,0.3); display:flex; align-items:center; padding:0 20px; font-size:9px; font-weight:800; color:#333;}
-.shake { animation: shake 0.1s linear infinite; }
-@keyframes shake { 0%{transform:translate(0,0)} 25%{transform:translate(1px,1px)} 50%{transform:translate(-1px,1px)} 75%{transform:translate(1px,-1px)} 100%{transform:translate(0,0)} }
-
-@media (max-width:600px){ .code-card{width:94%; height:60vh;} .code-area{padding:20px;} }
+@media (max-width:600px){ .code-card{width:94%; height:62vh;} .code-area{padding:25px; font-size:14px;} }
 </style>
-<title>Pro Capture Studio</title>
+<title>Viral Pro Studio</title>
 </head>
 <body>
-<div class="grid-bg"></div>
 
-<div class="code-card">
+<div class="glitch-overlay" id="intro">
+  <div class="glitch-text">INITIALIZING STUDIO</div>
+  <div style="font-size:10px; font-weight:800; color:rgba(0,210,255,0.4); letter-spacing:2px">PRO CAPTURE v2.0</div>
+</div>
+
+<div class="bg-glow" style="top:-100px; right:-100px"></div>
+<div class="bg-glow" style="bottom:-100px; left:-100px"></div>
+
+<div class="code-card" id="card">
   <div class="card-header">
     <div class="card-dots">
       <div class="cdot" style="background:#ff5f57"></div>
       <div class="cdot" style="background:#febc2e"></div>
       <div class="cdot" style="background:#28c840"></div>
     </div>
-    <span style="font-size:9px;font-weight:900;color:var(--accent);letter-spacing:3px;text-transform:uppercase" id="fname">CodeWithArnix & GamerArnabXYZ</span>
+    <span style="font-size:10px;font-weight:900;color:var(--accent);letter-spacing:4px;text-transform:uppercase" id="fname">ENGINE.SOURCE</span>
     <div style="width:40px"></div>
   </div>
   <div class="code-area" id="cs"><pre id="out"></pre></div>
   <div class="preview-wrap" id="prvWrap" style="height:0"><iframe id="prvFrame" style="width:100%;height:100%;border:none"></iframe></div>
 </div>
 
-<!-- FLOATING STUDIO UI -->
-<div class="ui-hide" style="position:fixed;top:20px;left:20px;display:flex;flex-direction:column;gap:10px;z-index:500">
-  <div style="display:flex;gap:8px">
-    <button class="ctrl" onclick="toggle()"><i class="fa-solid fa-pause" id="ctrlIco"></i><span id="ctrlLbl">Stop</span></button>
-    <button class="ctrl" id="prvToggle" onclick="togglePreview()"><i class="fa-solid fa-display"></i></button>
+<div class="ui-hide" style="position:fixed;top:30px;left:30px;display:flex;flex-direction:column;gap:15px;z-index:500">
+  <div style="display:flex;gap:10px">
+    <button class="ctrl" style="height:44px; padding:0 25px; font-size:12px" onclick="toggle()"><i class="fa-solid fa-pause" id="ctrlIco"></i><span id="ctrlLbl">Stop</span></button>
+    <button class="ctrl" style="height:44px; width:44px; display:flex; align-items:center; justify-content:center" onclick="togglePreview()"><i class="fa-solid fa-display"></i></button>
   </div>
-  <!-- On-the-fly Font Size -->
-  <div class="ctrl" style="height:32px; gap:12px; width:fit-content">
-    <i class="fa-solid fa-font" style="font-size:10px"></i>
-    <input type="range" min="10" max="24" value="15" oninput="updateFS(this.value)" style="width:80px; accent-color:var(--accent)">
-    <span id="fsNum" style="min-width:25px">15px</span>
+  
+  <div class="ctrl" style="height:36px; gap:15px; width:fit-content; background:rgba(0,0,0,0.3)">
+    <i class="fa-solid fa-font" style="font-size:10px; opacity:0.5"></i>
+    <input type="range" min="10" max="24" value="16" oninput="updateFS(this.value)" style="width:100px; accent-color:var(--accent)">
+    <span id="fsNum" style="min-width:30px; font-weight:900">16px</span>
   </div>
 </div>
 
-<button class="ctrl ui-hide" id="switchBtn" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:none" onclick="focusSwitch()">
-  <i class="fa-solid fa-rotate"></i> <span id="swTxt">Show Preview</span>
-</button>
-
-<div class="rec-btn" onclick="toggleRec()" id="recBtn"><i class="fa-solid fa-video"></i></div>
-
-<div class="statusbar ui-hide">
-  <span id="sbSt">READY</span><div style="flex:1"></div><span id="sbPct">0%</span>
-</div>
+<div class="rec-btn" onclick="toggleRec()" id="recBtn"><i class="fa-solid fa-camera"></i></div>
 
 <script>
 const LS='codepad_v1', LSP='codepad_speed', LSL='codepad_layout';
 let code='',idx=0,running=false,paused=false,timer=null;
-const out=document.getElementById('out'), cs=document.getElementById('cs');
+const out=document.getElementById('out'), cs=document.getElementById('cs'), card=document.getElementById('card');
 const cur=document.createElement('span'); cur.className='cur';
-// Extended Speeds: 1 to 20
 const delays=[150,120,100,80,65,55,45,35,28,22,18,14,10,7,5,3,2,1,0.5,0];
 
 let audioCtx = null, clickBuffer = null;
@@ -176,7 +169,7 @@ async function initAudio() {
 function playClick() {
   if(localStorage.getItem('cp_sound') !== 'true' || !clickBuffer || !audioCtx) return;
   const source = audioCtx.createBufferSource(); source.buffer = clickBuffer;
-  const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+  const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
   source.connect(gain); gain.connect(audioCtx.destination); source.start(0);
 }
 
@@ -203,17 +196,34 @@ window.addEventListener('DOMContentLoaded',()=>{
   code=localStorage.getItem(LS)||'';
   const layout = localStorage.getItem(LSL) || 'classic';
   document.body.classList.add('lay-' + layout);
-  if(layout === 'focus') { document.getElementById('switchBtn').style.display = 'flex'; document.getElementById('prvToggle').style.display='none'; }
 
-  if(code){
-    out.innerHTML = ''; out.appendChild(cur);
-    document.body.addEventListener('click', initAudio, {once:true});
-    // Restore UI on Double Tap
-    document.body.addEventListener('dblclick', () => {
-      document.body.classList.remove('recording');
-      document.getElementById('recBtn').classList.remove('active');
+  // Cinematic Intro Sequence
+  setTimeout(() => {
+    document.getElementById('intro').classList.add('hide');
+    if(code){
+      out.innerHTML = ''; out.appendChild(cur);
+      document.body.addEventListener('click', initAudio, {once:true});
+      document.body.addEventListener('dblclick', () => {
+        document.body.classList.remove('recording');
+        document.getElementById('recBtn').classList.remove('active');
+      });
+      setTimeout(startTyping, 500);
+    }
+  }, 1800);
+
+  // 3D Parallax logic
+  document.body.addEventListener('mousemove', (e) => {
+    const x = (window.innerWidth / 2 - e.pageX) / 45;
+    const y = (window.innerHeight / 2 - e.pageY) / 45;
+    card.style.transform = `rotateX(${y}deg) rotateY(${-x}deg)`;
+  });
+  
+  if(window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (e) => {
+      const x = Math.min(Math.max(e.gamma, -20), 20) / 2;
+      const y = Math.min(Math.max(e.beta - 45, -20), 20) / 2;
+      card.style.transform = `rotateX(${y}deg) rotateY(${x}deg)`;
     });
-    setTimeout(startTyping, 1200);
   }
 });
 
@@ -235,9 +245,7 @@ function tick(){
   
   cur.scrollIntoView({block:'nearest',behavior:'smooth'});
   if(ch==='>' || idx%100===0) renderPreview(code.slice(0,idx));
-  updateSb();
   
-  // Speed Logic Fix: Always fetch current setting from localStorage
   const spdSetting = parseInt(localStorage.getItem(LSP)||'5');
   const spdIdx = Math.min(Math.max(spdSetting, 1), 20) - 1;
   let delay = delays[spdIdx];
@@ -259,21 +267,20 @@ function toggleRec(){ document.body.classList.toggle('recording'); document.getE
 function renderPreview(html){ document.getElementById('prvFrame').srcdoc = html; }
 function togglePreview(){ 
   const p = document.getElementById('prvWrap');
-  p.style.height = (p.style.height==='0px'||!p.style.height) ? '25vh' : '0';
+  p.style.height = (p.style.height==='0px'||!p.style.height) ? '30vh' : '0';
 }
 function focusSwitch() {
   const isPrv = document.body.classList.toggle('show-prv');
-  document.getElementById('swTxt').textContent = isPrv ? 'Show Code' : 'Show Preview';
+  document.getElementById('swTxt').textContent = isPrv ? 'CODE SOURCE' : 'PREVIEW RESULT';
 }
 function setState(s){
   document.getElementById('ctrlLbl').textContent = s==='paused'?'Resume':'Stop';
   document.getElementById('ctrlIco').className = s==='paused'?'fa-solid fa-play':'fa-solid fa-pause';
 }
-function updateSb(){ document.getElementById('sbPct').textContent = Math.round((idx/code.length)*100)+'%'; }
 function confettiBurst(){
   for(let i=0; i<30; i++){
     const conf = document.createElement('div');
-    conf.style.cssText = `position:fixed; left:50%; top:50%; width:8px; height:8px; background:hsl(${Math.random()*360},100%,50%); border-radius:50%; z-index:10000; pointer-events:none;`;
+    conf.style.cssText = `position:fixed; left:50%; top:50%; width:8px; height:8px; background:hsl(${Math.random()*360},100%,50%); border-radius:50%; z-index:10000; pointer-events:none; box-shadow:0 0 15px var(--accent);`;
     document.body.appendChild(conf);
     const angle = Math.random()*Math.PI*2, vel = 5+Math.random()*10, vx = Math.cos(angle)*vel, vy = Math.sin(angle)*vel;
     let x=0, y=0, op=1;

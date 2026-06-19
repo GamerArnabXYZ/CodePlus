@@ -22,6 +22,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg)}
 body{
   background:radial-gradient(circle at center,#0a0a1a 0%,#020204 100%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;
   color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
@@ -61,8 +62,14 @@ body{
   display:flex;align-items:center;justify-content:space-between;
   border-bottom:1px solid var(--border);flex-shrink:0;
 }
-.card-dots{display:flex;gap:10px}
+.card-dots{display:flex;gap:10px;flex-shrink:0}
 .cdot{width:12px;height:12px;border-radius:50%}
+#fname{
+  flex:1;min-width:0;text-align:center;padding:0 10px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:10px;font-weight:900;color:var(--accent);
+  letter-spacing:2px;text-transform:uppercase;
+}
 
 .code-area{
   flex:1;padding:28px;overflow-y:auto;scrollbar-width:none;
@@ -97,22 +104,6 @@ body.recording .rec-btn{opacity:0;pointer-events:none;transition:opacity 0.5s}
   font-size:22px;
 }
 .rec-btn.active{background:rgba(255,59,48,0.35);box-shadow:0 0 20px rgba(255,59,48,0.4)}
-
-/* Recording status indicator */
-.rec-indicator{
-  position:fixed;top:24px;right:24px;
-  display:flex;align-items:center;gap:8px;
-  padding:8px 14px;border-radius:20px;
-  background:rgba(255,59,48,0.15);border:1px solid #ff3b30;
-  font-size:11px;font-weight:800;color:#ff3b30;letter-spacing:2px;
-  opacity:0;pointer-events:none;transition:0.3s;z-index:1001;
-}
-.rec-indicator.show{opacity:1}
-.rec-indicator::before{
-  content:'';width:8px;height:8px;border-radius:50%;
-  background:#ff3b30;animation:recblink 1s step-start infinite;
-}
-@keyframes recblink{50%{opacity:0}}
 
 /* ── SYNTAX COLORS ── */
 .tag{color:#ff79c6;text-shadow:0 0 12px rgba(255,121,198,0.4)}
@@ -149,6 +140,7 @@ pre#out{white-space:pre-wrap;word-break:break-all}
   .code-card{width:95%;height:60vh}
   .code-area{padding:20px;font-size:13px}
   .rec-btn{bottom:24px;right:24px;width:60px;height:60px;font-size:20px}
+  #fname{font-size:8px;letter-spacing:1px}
 }
 </style>
 </head>
@@ -169,7 +161,7 @@ pre#out{white-space:pre-wrap;word-break:break-all}
       <div class="cdot" style="background:#febc2e"></div>
       <div class="cdot" style="background:#28c840"></div>
     </div>
-    <span style="font-size:10px;font-weight:900;color:var(--accent);letter-spacing:4px;text-transform:uppercase" id="fname">ENGINE.SOURCE</span>
+    <span id="fname">CodeWithArnix & GamerArnabXYZ</span>
     <div style="width:40px"></div>
   </div>
   <div class="code-area" id="cs"><pre id="out"></pre></div>
@@ -179,25 +171,15 @@ pre#out{white-space:pre-wrap;word-break:break-all}
 </div>
 
 <!-- UI Controls -->
-<div class="ui-hide" style="position:fixed;top:24px;left:24px;display:flex;flex-direction:column;gap:10px;z-index:500">
-  <div style="display:flex;gap:8px">
-    <button class="ctrl" onclick="toggle()" id="ctrlBtn">
-      <i class="fa-solid fa-pause" id="ctrlIco"></i>
-      <span id="ctrlLbl">Stop</span>
-    </button>
-    <button class="ctrl" style="width:44px;padding:0;justify-content:center" onclick="togglePreview()" title="Toggle Preview">
-      <i class="fa-solid fa-display"></i>
-    </button>
-  </div>
-  <div class="ctrl" style="gap:12px;padding:0 14px">
-    <i class="fa-solid fa-font" style="font-size:10px;opacity:0.5"></i>
-    <input type="range" min="10" max="24" value="15" id="fsSlider" oninput="updateFS(this.value)" style="width:90px;accent-color:var(--accent)">
-    <span id="fsNum" style="min-width:32px;font-weight:900;font-size:12px">15px</span>
-  </div>
+<div class="ui-hide" style="position:fixed;top:24px;left:24px;display:flex;gap:8px;z-index:500">
+  <button class="ctrl" onclick="toggle()" id="ctrlBtn">
+    <i class="fa-solid fa-pause" id="ctrlIco"></i>
+    <span id="ctrlLbl">Stop</span>
+  </button>
+  <button class="ctrl" style="width:44px;padding:0;justify-content:center" onclick="togglePreview()" title="Toggle Preview">
+    <i class="fa-solid fa-display"></i>
+  </button>
 </div>
-
-<!-- Recording status -->
-<div class="rec-indicator" id="recInd">REC</div>
 
 <!-- Record button -->
 <div class="rec-btn" onclick="toggleRec()" id="recBtn" title="Toggle ghost recording mode">
@@ -205,8 +187,8 @@ pre#out{white-space:pre-wrap;word-break:break-all}
 </div>
 
 <script>
-const LS='codepad_v1', LSP='codepad_speed', LSL='codepad_layout';
-let code='',idx=0,running=false,paused=false,timer=null;
+const LS='codepad_v1', LSP='codepad_speed', LSL='codepad_layout', LSAF='codepad_auto_fs';
+let code='',idx=0,running=false,paused=true,timer=null;
 const out=document.getElementById('out');
 const cs=document.getElementById('cs');
 const card=document.getElementById('card');
@@ -268,14 +250,12 @@ window.addEventListener('DOMContentLoaded',()=>{
   const layout=localStorage.getItem(LSL)||'classic';
   document.body.classList.add('lay-'+layout);
 
-  // Set font name in header
-  const name=localStorage.getItem('codepad_prj_name');
-  if(name) document.getElementById('fname').textContent=name.toUpperCase().replace(/\s+/g,'.')+'.SRC';
+  // Extra items hidden by default — triple-tap reveals them
+  document.body.classList.add('recording');
 
-  // Font size from settings
-  const settings=JSON.parse(localStorage.getItem('codepad_settings')||'{"fs":15}');
-  updateFS(settings.fs, false);
-  document.getElementById('fsSlider').value=settings.fs;
+  // Font size — controlled from index.html's Auto Write Studio
+  const autoFs=localStorage.getItem(LSAF)||'16';
+  updateFS(autoFs);
 
   // Cinematic intro
   setTimeout(()=>{
@@ -286,16 +266,17 @@ window.addEventListener('DOMContentLoaded',()=>{
       // Init audio on first interaction
       document.body.addEventListener('touchstart',initAudio,{once:true,passive:true});
       document.body.addEventListener('click',initAudio,{once:true});
-      setTimeout(startTyping,400);
+      // Starts paused — single tap to begin typing
+      setState('paused');
     } else {
       out.textContent='// No code found.\n// Go back to CodePad and write something!';
     }
   },1800);
+
+  initTapGestures();
 });
 
 /* ── TYPING ENGINE ── */
-function startTyping(){ running=true; paused=false; setState('running'); tick(); }
-
 function tick(){
   if(!running||paused) return;
   if(idx>=code.length){
@@ -344,13 +325,33 @@ function setState(s){
 function toggleRec(){
   const isRec=document.body.classList.toggle('recording');
   document.getElementById('recBtn').classList.toggle('active',isRec);
-  document.getElementById('recInd').classList.toggle('show',isRec);
 }
 
-function updateFS(v, updateSlider=true){
+/* ── TAP GESTURES ── */
+/* Single tap = pause/resume | Double tap = preview on/off | Triple tap = extra UI items on/off */
+let tapCount=0, tapTimer=null;
+const TAP_WINDOW=320;
+
+function initTapGestures(){
+  document.body.addEventListener('click', handleTap);
+}
+
+function handleTap(e){
+  // Ignore taps on actual interactive controls — they have their own onclick
+  if(e.target.closest('.ctrl, .rec-btn, input, button')) return;
+
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer=setTimeout(()=>{
+    if(tapCount===1) toggle();
+    else if(tapCount===2) togglePreview();
+    else if(tapCount>=3) toggleRec();
+    tapCount=0;
+  }, TAP_WINDOW);
+}
+
+function updateFS(v){
   cs.style.fontSize=v+'px';
-  document.getElementById('fsNum').textContent=v+'px';
-  if(updateSlider) document.getElementById('fsSlider').value=v;
 }
 
 function renderPreview(html){

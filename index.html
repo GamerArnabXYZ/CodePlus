@@ -217,6 +217,13 @@ textarea#code{
           <span id="spdNum" style="font-size:13px;font-weight:800;color:var(--accent-solid);min-width:20px">5</span>
         </div>
       </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <span style="font-size:13px;font-weight:600;color:var(--text3)">Preview Font</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" id="autoFs" min="5" max="50" value="16" oninput="updateAutoFS(this.value)" style="width:100px">
+          <span id="autoFsNum" style="font-size:13px;font-weight:800;color:var(--accent-solid);min-width:34px">16px</span>
+        </div>
+      </div>
       <div style="display:flex;flex-direction:column;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border)">
         <span style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Recording Layout</span>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
@@ -269,7 +276,7 @@ textarea#code{
 <div class="toast" id="toast"><span></span></div>
 
 <script>
-const LS='codepad_v1_files', LSP='codepad_speed', LSC='codepad_current_tab', LSN='codepad_prj_name', LSS='codepad_settings', LSL='codepad_layout';
+const LS='codepad_v1_files', LSP='codepad_speed', LSC='codepad_current_tab', LSN='codepad_prj_name', LSS='codepad_settings', LSL='codepad_layout', LSAF='codepad_auto_fs';
 const ta=document.getElementById('code'), gut=document.getElementById('gutter');
 let prvOpen=true, previewTimer=null;
 let files={'index.html':'','style.css':'','script.js':''};
@@ -294,6 +301,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   const spd=localStorage.getItem(LSP)||'5';
   document.getElementById('spd').value=spd;
   document.getElementById('spdNum').textContent=spd;
+
+  const autoFs=localStorage.getItem(LSAF)||'16';
+  document.getElementById('autoFs').value=autoFs;
+  document.getElementById('autoFsNum').textContent=autoFs+'px';
 
   setLay(localStorage.getItem(LSL)||'classic');
 
@@ -446,6 +457,7 @@ async function downloadZIP(){
 
 /* ── AUTO WRITE SHEET ── */
 function updateSpeed(v){ document.getElementById('spdNum').textContent=v; localStorage.setItem(LSP,v); }
+function updateAutoFS(v){ document.getElementById('autoFsNum').textContent=v+'px'; localStorage.setItem(LSAF,v); }
 function setLay(l){
   ['classic','focus','wide'].forEach(x=>document.getElementById('lay_'+x).classList.remove('primary'));
   document.getElementById('lay_'+l).classList.add('primary');

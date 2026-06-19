@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Viral Pro Studio</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -15,109 +16,151 @@
   --border:rgba(0,210,255,0.3);
   --text:#ffffff;
   --glass:blur(40px) saturate(200%);
-  --neon-glow:0 0 20px rgba(0,210,255,0.4), 0 0 40px rgba(0,210,255,0.2);
+  --neon-glow:0 0 20px rgba(0,210,255,0.4),0 0 40px rgba(0,210,255,0.2);
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);perspective:1000px;}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
 body{
-  background:radial-gradient(circle at center, #0a0a1a 0%, #020204 100%);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
+  background:radial-gradient(circle at center,#0a0a1a 0%,#020204 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--text);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
 /* ── INTRO GLITCH ── */
-.glitch-overlay {
-  position:fixed; inset:0; background:#000; z-index:9999;
-  display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:20px; transition:0.8s cubic-bezier(0.8, 0, 0.2, 1);
+.glitch-overlay{
+  position:fixed;inset:0;background:#000;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:20px;transition:opacity 0.8s cubic-bezier(0.8,0,0.2,1);
 }
-.glitch-overlay.hide { opacity:0; pointer-events:none; }
-.glitch-text { font-family:'JetBrains Mono'; font-weight:900; font-size:24px; letter-spacing:8px; color:var(--accent); text-transform:uppercase; animation:glitch 0.4s infinite; }
-@keyframes glitch {
-  0% { transform: translate(0); text-shadow: 2px 0 red, -2px 0 blue; }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); text-shadow: -2px 0 red, 2px 0 blue; }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
-  100% { transform: translate(0); }
+.glitch-overlay.hide{opacity:0;pointer-events:none}
+.glitch-text{
+  font-family:'JetBrains Mono';font-weight:900;font-size:22px;
+  letter-spacing:8px;color:var(--accent);text-transform:uppercase;
+  animation:glitch 0.4s infinite;
+}
+@keyframes glitch{
+  0%{transform:translate(0);text-shadow:2px 0 red,-2px 0 blue}
+  20%{transform:translate(-2px,2px)}
+  40%{transform:translate(-2px,-2px);text-shadow:-2px 0 red,2px 0 blue}
+  60%{transform:translate(2px,2px)}
+  80%{transform:translate(2px,-2px)}
+  100%{transform:translate(0)}
 }
 
 /* ── CINEMATIC CARD ── */
 .code-card{
-  width:90%; max-width:850px; height:68vh;
-  background:var(--card-bg); border:1px solid var(--border);
-  border-radius:32px; position:relative; overflow:hidden;
-  backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
-  box-shadow:0 40px 120px rgba(0,0,0,0.9), var(--neon-glow);
-  display:flex; flex-direction:column;
-  transition:0.1s linear; /* Smooth tilt */
-  transform-style:preserve-3d;
-  margin:60px 0;
+  width:90%;max-width:850px;height:64vh;
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:28px;position:relative;overflow:hidden;
+  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+  box-shadow:0 40px 120px rgba(0,0,0,0.9),var(--neon-glow);
+  display:flex;flex-direction:column;
 }
 
 .card-header{
-  height:56px; padding:0 28px; background:rgba(0,0,0,0.5);
-  display:flex; align-items:center; justify-content:space-between;
-  border-bottom:1px solid var(--border);
+  height:52px;padding:0 24px;background:rgba(0,0,0,0.5);
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);flex-shrink:0;
 }
-.card-dots{display:flex; gap:12px;}
-.cdot{width:12px; height:12px; border-radius:50%;}
+.card-dots{display:flex;gap:10px}
+.cdot{width:12px;height:12px;border-radius:50%}
 
 .code-area{
-  flex:1; padding:35px; overflow-y:auto; scrollbar-width:none;
-  font-family:'JetBrains Mono', monospace; font-size:16px; line-height:1.9;
+  flex:1;padding:28px;overflow-y:auto;scrollbar-width:none;
+  font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.9;
 }
-.code-area::-webkit-scrollbar{display:none;}
+.code-area::-webkit-scrollbar{display:none}
 
-/* ── GHOST RECORDING MODE ── */
-body.recording .ui-hide, body.recording .rec-btn { opacity:0; pointer-events:none; visibility:hidden; }
+/* ── UI CONTROLS ── */
+.ctrl{
+  height:44px;padding:0 20px;border-radius:14px;
+  background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.25);
+  color:var(--text);font-family:'Inter',sans-serif;font-size:12px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  transition:0.2s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.ctrl:active{transform:scale(0.94)}
+.ctrl:hover{background:rgba(0,210,255,0.2)}
+
+/* Ghost recording mode — hide all controls */
+body.recording .ui-hide{opacity:0;pointer-events:none;transition:opacity 0.5s}
+body.recording .rec-btn{opacity:0;pointer-events:none;transition:opacity 0.5s}
+
+/* Fade-in for .ui-hide when not recording */
+.ui-hide{opacity:1;transition:opacity 0.5s}
 
 .rec-btn{
-  position:fixed; bottom:40px; right:40px;
-  width:72px; height:72px; border-radius:50%;
-  background:rgba(255,59,48,0.2); border:2px solid #ff3b30;
-  display:flex; align-items:center; justify-content:center;
-  color:#ff3b30; cursor:pointer; z-index:1000; transition:0.4s;
-  font-size:24px;
+  position:fixed;bottom:36px;right:36px;
+  width:68px;height:68px;border-radius:50%;
+  background:rgba(255,59,48,0.15);border:2px solid #ff3b30;
+  display:flex;align-items:center;justify-content:center;
+  color:#ff3b30;cursor:pointer;z-index:1000;transition:0.4s;
+  font-size:22px;
 }
+.rec-btn.active{background:rgba(255,59,48,0.35);box-shadow:0 0 20px rgba(255,59,48,0.4)}
 
-/* ── SYNTAX COLORS (Vibrant) ── */
-.tag{color:#ff79c6; text-shadow:0 0 15px rgba(255,121,198,0.5)}
-.attr{color:#50fa7b; text-shadow:0 0 10px rgba(80,250,123,0.3)}
+/* Recording status indicator */
+.rec-indicator{
+  position:fixed;top:24px;right:24px;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:20px;
+  background:rgba(255,59,48,0.15);border:1px solid #ff3b30;
+  font-size:11px;font-weight:800;color:#ff3b30;letter-spacing:2px;
+  opacity:0;pointer-events:none;transition:0.3s;z-index:1001;
+}
+.rec-indicator.show{opacity:1}
+.rec-indicator::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:#ff3b30;animation:recblink 1s step-start infinite;
+}
+@keyframes recblink{50%{opacity:0}}
+
+/* ── SYNTAX COLORS ── */
+.tag{color:#ff79c6;text-shadow:0 0 12px rgba(255,121,198,0.4)}
+.attr{color:#50fa7b;text-shadow:0 0 8px rgba(80,250,123,0.25)}
 .val{color:#f1fa8c}
-.com{color:#6272a4; font-style:italic}
-
-pre#out{ white-space:pre-wrap; word-break:break-all; }
+.com{color:#6272a4;font-style:italic}
+pre#out{white-space:pre-wrap;word-break:break-all}
 
 .cur{
-  display:inline-block; width:10px; height:1.2em;
-  background:var(--accent); vertical-align:text-bottom;
+  display:inline-block;width:10px;height:1.2em;
+  background:var(--accent);vertical-align:text-bottom;
   animation:cur 1s step-start infinite;
-  box-shadow:0 0 15px var(--accent); border-radius:2px; margin-left:2px;
+  box-shadow:0 0 12px var(--accent);border-radius:2px;margin-left:2px;
 }
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 
-.preview-wrap{width:100%; overflow:hidden; background:#fff; border-top:1px solid var(--border); transition:0.6s cubic-bezier(0.4,0,0.2,1);}
-
-/* Floating BG Elements */
-.bg-glow {
-  position:fixed; width:400px; height:400px; border-radius:50%;
-  background:radial-gradient(circle, rgba(0,210,255,0.1) 0%, transparent 70%);
-  filter:blur(100px); z-index:-1; pointer-events:none;
+/* Preview panel */
+.preview-wrap{
+  width:100%;background:#fff;border-top:1px solid var(--border);
+  transition:height 0.5s cubic-bezier(0.4,0,0.2,1);flex-shrink:0;
 }
 
-@media (max-width:600px){ .code-card{width:94%; height:62vh;} .code-area{padding:25px; font-size:14px;} }
+/* BG Glow */
+.bg-glow{
+  position:fixed;width:350px;height:350px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,210,255,0.08) 0%,transparent 70%);
+  filter:blur(80px);z-index:-1;pointer-events:none;
+}
+
+/* Done state */
+.code-card.done{border-color:rgba(52,199,89,0.5);box-shadow:0 40px 120px rgba(0,0,0,0.9),0 0 30px rgba(52,199,89,0.3)}
+
+@media(max-width:600px){
+  .code-card{width:95%;height:60vh}
+  .code-area{padding:20px;font-size:13px}
+  .rec-btn{bottom:24px;right:24px;width:60px;height:60px;font-size:20px}
+}
 </style>
-<title>Viral Pro Studio</title>
 </head>
 <body>
 
 <div class="glitch-overlay" id="intro">
   <div class="glitch-text">INITIALIZING STUDIO</div>
-  <div style="font-size:10px; font-weight:800; color:rgba(0,210,255,0.4); letter-spacing:2px">PRO CAPTURE v2.0</div>
+  <div style="font-size:10px;font-weight:800;color:rgba(0,210,255,0.4);letter-spacing:3px;margin-top:4px">PRO CAPTURE v2.1</div>
 </div>
 
-<div class="bg-glow" style="top:-100px; right:-100px"></div>
-<div class="bg-glow" style="bottom:-100px; left:-100px"></div>
+<div class="bg-glow" style="top:-100px;right:-100px"></div>
+<div class="bg-glow" style="bottom:-100px;left:-100px"></div>
 
 <div class="code-card" id="card">
   <div class="card-header">
@@ -130,162 +173,218 @@ pre#out{ white-space:pre-wrap; word-break:break-all; }
     <div style="width:40px"></div>
   </div>
   <div class="code-area" id="cs"><pre id="out"></pre></div>
-  <div class="preview-wrap" id="prvWrap" style="height:0"><iframe id="prvFrame" style="width:100%;height:100%;border:none"></iframe></div>
-</div>
-
-<div class="ui-hide" style="position:fixed;top:30px;left:30px;display:flex;flex-direction:column;gap:15px;z-index:500">
-  <div style="display:flex;gap:10px">
-    <button class="ctrl" style="height:44px; padding:0 25px; font-size:12px" onclick="toggle()"><i class="fa-solid fa-pause" id="ctrlIco"></i><span id="ctrlLbl">Stop</span></button>
-    <button class="ctrl" style="height:44px; width:44px; display:flex; align-items:center; justify-content:center" onclick="togglePreview()"><i class="fa-solid fa-display"></i></button>
-  </div>
-  
-  <div class="ctrl" style="height:36px; gap:15px; width:fit-content; background:rgba(0,0,0,0.3)">
-    <i class="fa-solid fa-font" style="font-size:10px; opacity:0.5"></i>
-    <input type="range" min="10" max="24" value="16" oninput="updateFS(this.value)" style="width:100px; accent-color:var(--accent)">
-    <span id="fsNum" style="min-width:30px; font-weight:900">16px</span>
+  <div class="preview-wrap" id="prvWrap" style="height:0">
+    <iframe id="prvFrame" style="width:100%;height:100%;border:none"></iframe>
   </div>
 </div>
 
-<div class="rec-btn" onclick="toggleRec()" id="recBtn"><i class="fa-solid fa-camera"></i></div>
+<!-- UI Controls -->
+<div class="ui-hide" style="position:fixed;top:24px;left:24px;display:flex;flex-direction:column;gap:10px;z-index:500">
+  <div style="display:flex;gap:8px">
+    <button class="ctrl" onclick="toggle()" id="ctrlBtn">
+      <i class="fa-solid fa-pause" id="ctrlIco"></i>
+      <span id="ctrlLbl">Stop</span>
+    </button>
+    <button class="ctrl" style="width:44px;padding:0;justify-content:center" onclick="togglePreview()" title="Toggle Preview">
+      <i class="fa-solid fa-display"></i>
+    </button>
+  </div>
+  <div class="ctrl" style="gap:12px;padding:0 14px">
+    <i class="fa-solid fa-font" style="font-size:10px;opacity:0.5"></i>
+    <input type="range" min="10" max="24" value="15" id="fsSlider" oninput="updateFS(this.value)" style="width:90px;accent-color:var(--accent)">
+    <span id="fsNum" style="min-width:32px;font-weight:900;font-size:12px">15px</span>
+  </div>
+</div>
+
+<!-- Recording status -->
+<div class="rec-indicator" id="recInd">REC</div>
+
+<!-- Record button -->
+<div class="rec-btn" onclick="toggleRec()" id="recBtn" title="Toggle ghost recording mode">
+  <i class="fa-solid fa-camera"></i>
+</div>
 
 <script>
 const LS='codepad_v1', LSP='codepad_speed', LSL='codepad_layout';
 let code='',idx=0,running=false,paused=false,timer=null;
-const out=document.getElementById('out'), cs=document.getElementById('cs'), card=document.getElementById('card');
-const cur=document.createElement('span'); cur.className='cur';
-const delays=[150,120,100,80,65,55,45,35,28,22,18,14,10,7,5,3,2,1,0.5,0];
+const out=document.getElementById('out');
+const cs=document.getElementById('cs');
+const card=document.getElementById('card');
+const cur=document.createElement('span');
+cur.className='cur';
 
-let audioCtx = null, clickBuffer = null;
-async function initAudio() {
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(audioCtx.state === 'suspended') await audioCtx.resume();
-  if(!clickBuffer && localStorage.getItem('cp_sound') === 'true') {
-    try {
-      const resp = await fetch('keyboard affect.wav');
-      clickBuffer = await audioCtx.decodeAudioData(await resp.arrayBuffer());
-    } catch(e) { console.error(e); }
-  }
+// Speed table: index 0 = speed 1 (slowest), index 19 = speed 20 (fastest)
+const delays=[200,160,130,105,85,68,52,40,30,22,16,12,8,5,3,2,1.5,1,0.5,0];
+
+/* ── AUDIO ── */
+let audioCtx=null, clickBuffer=null;
+async function initAudio(){
+  try{
+    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') await audioCtx.resume();
+    if(!clickBuffer && localStorage.getItem('cp_sound')==='true'){
+      // Filename may have spaces — use encoded path
+      const resp=await fetch('keyboard%20affect.wav');
+      if(resp.ok) clickBuffer=await audioCtx.decodeAudioData(await resp.arrayBuffer());
+    }
+  } catch(e){ console.warn('Audio init failed:',e); }
 }
-function playClick() {
-  if(localStorage.getItem('cp_sound') !== 'true' || !clickBuffer || !audioCtx) return;
-  const source = audioCtx.createBufferSource(); source.buffer = clickBuffer;
-  const gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-  source.connect(gain); gain.connect(audioCtx.destination); source.start(0);
+function playClick(){
+  if(localStorage.getItem('cp_sound')!=='true'||!clickBuffer||!audioCtx) return;
+  try{
+    const src=audioCtx.createBufferSource(); src.buffer=clickBuffer;
+    const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.12,audioCtx.currentTime);
+    src.connect(gain); gain.connect(audioCtx.destination); src.start(0);
+  } catch(e){}
 }
 
-function highlight(text) {
-  const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const rules = [
-    { reg: /(&lt;!--.*?--&gt;)/g, cls: 'com' },
-    { reg: /(&lt;[!\/]?[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9-]+(?:=".*?")?)*[!\/]?&gt;)/g, cls: 'tag' },
-    { reg: /(".*?")/g, cls: 'val' }
-  ];
-  let result = escaped; const placeholders = [];
-  rules.forEach((rule, i) => {
-    result = result.replace(rule.reg, (m) => {
-      const ph = `__PH_${i}_${placeholders.length}__`;
-      placeholders.push({ ph, html: `<span class="${rule.cls}">${m}</span>` });
-      return ph;
-    });
+/* ── SYNTAX HIGHLIGHT ── */
+function highlight(text){
+  const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Process in order: comments → tags → attribute values
+  const placeholders=[];
+  let r=esc;
+  // Comments
+  r=r.replace(/(&lt;!--[\s\S]*?--&gt;)/g,(m)=>{
+    const ph='__PH'+placeholders.length+'__';
+    placeholders.push({ph,html:`<span class="com">${m}</span>`});
+    return ph;
   });
-  placeholders.forEach(p => result = result.replace(p.ph, p.html));
-  return result;
+  // Tags (whole tag)
+  r=r.replace(/(&lt;[!\/]?[a-zA-Z][^&]*?&gt;)/g,(m)=>{
+    // Color attr values inside tag
+    const inner=m.replace(/(=["])([^"]*?)(")/g,`=$1<span class="val">$2</span>$3`).replace(/(=')(.*?)(')/g,`=$1<span class="val">$2</span>$3`);
+    const ph='__PH'+placeholders.length+'__';
+    placeholders.push({ph,html:`<span class="tag">${inner}</span>`});
+    return ph;
+  });
+  placeholders.forEach(p=>{ r=r.replace(p.ph,p.html); });
+  return r;
 }
 
+/* ── INIT ── */
 window.addEventListener('DOMContentLoaded',()=>{
   code=localStorage.getItem(LS)||'';
-  const layout = localStorage.getItem(LSL) || 'classic';
-  document.body.classList.add('lay-' + layout);
+  const layout=localStorage.getItem(LSL)||'classic';
+  document.body.classList.add('lay-'+layout);
 
-  // Cinematic Intro Sequence
-  setTimeout(() => {
+  // Set font name in header
+  const name=localStorage.getItem('codepad_prj_name');
+  if(name) document.getElementById('fname').textContent=name.toUpperCase().replace(/\s+/g,'.')+'.SRC';
+
+  // Font size from settings
+  const settings=JSON.parse(localStorage.getItem('codepad_settings')||'{"fs":15}');
+  updateFS(settings.fs, false);
+  document.getElementById('fsSlider').value=settings.fs;
+
+  // Cinematic intro
+  setTimeout(()=>{
     document.getElementById('intro').classList.add('hide');
     if(code){
-      out.innerHTML = ''; out.appendChild(cur);
-      document.body.addEventListener('click', initAudio, {once:true});
-      document.body.addEventListener('dblclick', () => {
-        document.body.classList.remove('recording');
-        document.getElementById('recBtn').classList.remove('active');
-      });
-      setTimeout(startTyping, 500);
+      out.innerHTML='';
+      out.appendChild(cur);
+      // Init audio on first interaction
+      document.body.addEventListener('touchstart',initAudio,{once:true,passive:true});
+      document.body.addEventListener('click',initAudio,{once:true});
+      setTimeout(startTyping,400);
+    } else {
+      out.textContent='// No code found.\n// Go back to CodePad and write something!';
     }
-  }, 1800);
-
-  // 3D Parallax logic
-  document.body.addEventListener('mousemove', (e) => {
-    const x = (window.innerWidth / 2 - e.pageX) / 45;
-    const y = (window.innerHeight / 2 - e.pageY) / 45;
-    card.style.transform = `rotateX(${y}deg) rotateY(${-x}deg)`;
-  });
-  
-  if(window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', (e) => {
-      const x = Math.min(Math.max(e.gamma, -20), 20) / 2;
-      const y = Math.min(Math.max(e.beta - 45, -20), 20) / 2;
-      card.style.transform = `rotateX(${y}deg) rotateY(${x}deg)`;
-    });
-  }
+  },1800);
 });
 
-function startTyping(){ running=true; setState('running'); tick(); }
+/* ── TYPING ENGINE ── */
+function startTyping(){ running=true; paused=false; setState('running'); tick(); }
 
 function tick(){
-  if(!running || paused) return;
-  if(idx>=code.length){ running=false; setState('done'); confettiBurst(); return; }
-  
+  if(!running||paused) return;
+  if(idx>=code.length){
+    running=false;
+    setState('done');
+    card.classList.add('done');
+    if(localStorage.getItem('cp_particles')==='true') confettiBurst();
+    return;
+  }
+
   const ch=code[idx]; idx++;
-  out.innerHTML = highlight(code.slice(0, idx));
+
+  // Efficient: only append new char highlighted span, not full re-render
+  // But highlight needs context — re-render up to idx with full highlight
+  // For performance: batch at newlines or every 50 chars
+  out.innerHTML=highlight(code.slice(0,idx));
   out.appendChild(cur);
+
   playClick();
 
-  if(localStorage.getItem('cp_shake')==='true' && ch !== ' ' && ch !== '\n') {
-    document.body.classList.add('shake');
-    setTimeout(() => document.body.classList.remove('shake'), 40);
-  }
-  
-  cur.scrollIntoView({block:'nearest',behavior:'smooth'});
-  if(ch==='>' || idx%100===0) renderPreview(code.slice(0,idx));
-  
-  const spdSetting = parseInt(localStorage.getItem(LSP)||'5');
-  const spdIdx = Math.min(Math.max(spdSetting, 1), 20) - 1;
-  let delay = delays[spdIdx];
-  if(localStorage.getItem('cp_turbo')==='true') delay = Math.max(0, delay/2);
-  
-  timer = setTimeout(tick, delay);
+  cur.scrollIntoView({block:'nearest',behavior:'auto'});
+  if(ch==='>' || idx%80===0) renderPreview(code.slice(0,idx));
+
+  const spdSetting=parseInt(localStorage.getItem(LSP)||'5');
+  const spdIdx=Math.min(Math.max(spdSetting,1),20)-1;
+  let delay=delays[spdIdx];
+  if(localStorage.getItem('cp_turbo')==='true') delay=Math.max(0,delay*0.5);
+
+  timer=setTimeout(tick,delay);
 }
 
-function updateFS(v){ 
-  document.querySelector('.code-area').style.fontSize = v+'px'; 
-  document.getElementById('fsNum').textContent = v+'px'; 
-}
-
+/* ── CONTROLS ── */
 function toggle(){
   if(paused){ paused=false; running=true; setState('running'); tick(); }
-  else { paused=true; setState('paused'); }
+  else { paused=true; setState('paused'); if(timer) clearTimeout(timer); }
 }
-function toggleRec(){ document.body.classList.toggle('recording'); document.getElementById('recBtn').classList.toggle('active'); }
-function renderPreview(html){ document.getElementById('prvFrame').srcdoc = html; }
-function togglePreview(){ 
-  const p = document.getElementById('prvWrap');
-  p.style.height = (p.style.height==='0px'||!p.style.height) ? '30vh' : '0';
-}
-function focusSwitch() {
-  const isPrv = document.body.classList.toggle('show-prv');
-  document.getElementById('swTxt').textContent = isPrv ? 'CODE SOURCE' : 'PREVIEW RESULT';
-}
+
 function setState(s){
-  document.getElementById('ctrlLbl').textContent = s==='paused'?'Resume':'Stop';
-  document.getElementById('ctrlIco').className = s==='paused'?'fa-solid fa-play':'fa-solid fa-pause';
+  const lbl=document.getElementById('ctrlLbl');
+  const ico=document.getElementById('ctrlIco');
+  if(s==='running'){ lbl.textContent='Stop'; ico.className='fa-solid fa-pause'; }
+  else if(s==='paused'){ lbl.textContent='Resume'; ico.className='fa-solid fa-play'; }
+  else if(s==='done'){ lbl.textContent='Done'; ico.className='fa-solid fa-check'; }
 }
+
+function toggleRec(){
+  const isRec=document.body.classList.toggle('recording');
+  document.getElementById('recBtn').classList.toggle('active',isRec);
+  document.getElementById('recInd').classList.toggle('show',isRec);
+}
+
+function updateFS(v, updateSlider=true){
+  cs.style.fontSize=v+'px';
+  document.getElementById('fsNum').textContent=v+'px';
+  if(updateSlider) document.getElementById('fsSlider').value=v;
+}
+
+function renderPreview(html){
+  const prv=document.getElementById('prvWrap');
+  if(prv.style.height==='0px'||prv.style.height==='0'||!prv.style.height) return;
+  document.getElementById('prvFrame').srcdoc=html;
+}
+
+function togglePreview(){
+  const p=document.getElementById('prvWrap');
+  const isOpen=p.style.height!=='0px'&&p.style.height!==''&&p.style.height!=='0';
+  p.style.height=isOpen?'0':'28vh';
+  if(!isOpen) document.getElementById('prvFrame').srcdoc=code.slice(0,idx);
+}
+
+/* ── CONFETTI ── */
 function confettiBurst(){
-  for(let i=0; i<30; i++){
-    const conf = document.createElement('div');
-    conf.style.cssText = `position:fixed; left:50%; top:50%; width:8px; height:8px; background:hsl(${Math.random()*360},100%,50%); border-radius:50%; z-index:10000; pointer-events:none; box-shadow:0 0 15px var(--accent);`;
+  const colors=['#ff79c6','#50fa7b','#f1fa8c','#00d2ff','#ff5f57','#febc2e'];
+  for(let i=0;i<40;i++){
+    const conf=document.createElement('div');
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    conf.style.cssText=`position:fixed;left:50%;top:50%;width:7px;height:7px;background:${color};border-radius:50%;z-index:10000;pointer-events:none;box-shadow:0 0 10px ${color}`;
     document.body.appendChild(conf);
-    const angle = Math.random()*Math.PI*2, vel = 5+Math.random()*10, vx = Math.cos(angle)*vel, vy = Math.sin(angle)*vel;
-    let x=0, y=0, op=1;
-    const move = () => { x+=vx; y+=vy; op-=0.02; conf.style.transform=`translate(${x}px,${y}px)`; conf.style.opacity=op; if(op>0) requestAnimationFrame(move); else conf.remove(); };
-    move();
+    const angle=Math.random()*Math.PI*2;
+    const vel=6+Math.random()*12;
+    const vx=Math.cos(angle)*vel, vy=Math.sin(angle)*vel;
+    let x=0,y=0,op=1;
+    const move=()=>{
+      x+=vx; y+=vy*1.02; op-=0.018;
+      conf.style.transform=`translate(calc(-50% + ${x}px),calc(-50% + ${y}px))`;
+      conf.style.opacity=op;
+      if(op>0) requestAnimationFrame(move); else conf.remove();
+    };
+    setTimeout(()=>requestAnimationFrame(move), Math.random()*200);
   }
 }
 </script>

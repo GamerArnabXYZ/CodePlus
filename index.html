@@ -16,7 +16,7 @@
   --surface3:rgba(44,44,48,0.95);
   --border:rgba(255,255,255,0.08);
   --border2:rgba(255,255,255,0.15);
-  --accent:linear-gradient(135deg, #007aff, #00c7ff);
+  --accent:linear-gradient(135deg,#007aff,#00c7ff);
   --accent-solid:#007aff;
   --text:#ffffff;
   --text2:#f5f5f7;
@@ -32,60 +32,64 @@
 html,body{height:100%;overflow:hidden;background:var(--bg)}
 body{
   color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh;
-  background:radial-gradient(circle at top right, #1a1a2e, #050506);
+  background:radial-gradient(circle at top right,#1a1a2e,#050506);
   -webkit-font-smoothing:antialiased;
 }
-
-/* Custom Scrollbar */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:10px}
 
-/* ── TITLEBAR ── */
+/* TITLEBAR */
 .titlebar{
   flex-shrink:0;height:60px;
   background:var(--surface);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 24px;gap:16px;
-  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
-  z-index:100;
+  backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);z-index:100;
 }
 .wdots{display:flex;gap:8px}
-.wd{width:12px;height:12px;border-radius:50%;}
+.wd{width:12px;height:12px;border-radius:50%}
 .wd.r{background:#ff5f57}.wd.y{background:#febc2e}.wd.g{background:#28c840}
 .title-mid{flex:1;display:flex;justify-content:center}
 .title-text{font-size:13px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:0.2s}
 .title-text:hover{color:var(--accent-solid)}
 .save-badge{
   display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;
-  background:var(--surface2);font-size:10px;font-family:var(--mono);font-weight:600;
+  background:var(--surface2);font-size:10px;font-family:var(--mono);font-weight:600;color:var(--text3);
+  transition:0.3s;
 }
 .save-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
 .save-badge.saved{color:var(--green);background:rgba(52,199,89,0.1)}
 .save-badge.saved .dot{background:var(--green);box-shadow:0 0 8px var(--green)}
+.save-badge.dirty{color:var(--orange);background:rgba(255,149,0,0.1)}
+.save-badge.dirty .dot{background:var(--orange)}
 
-/* ── TABS ── */
+/* TABS */
 .tabs{
   flex-shrink:0;display:flex;align-items:stretch;
   padding:8px 16px 0;gap:6px;overflow-x:auto;scrollbar-width:none;
 }
+.tabs::-webkit-scrollbar{display:none}
 .tab{
   display:flex;align-items:center;gap:10px;padding:0 22px;height:46px;
   font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;
-  border-radius:12px 12px 0 0;transition:0.3s;
+  border-radius:12px 12px 0 0;transition:0.3s;user-select:none;
 }
 .tab.active{color:var(--text);background:var(--surface);box-shadow:0 -4px 15px rgba(0,0,0,0.1)}
+.tab i{pointer-events:none}
+.tab span{pointer-events:none}
 
-/* ── TOOLBAR ── */
+/* TOOLBAR */
 .toolbar{
   flex-shrink:0;display:flex;align-items:center;padding:14px 20px;gap:10px;
   background:var(--surface);border-bottom:1px solid var(--border);
   backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
   overflow-x:auto;scrollbar-width:none;
 }
+.toolbar::-webkit-scrollbar{display:none}
 .tbtn{
   height:40px;padding:0 16px;border-radius:12px;
   background:var(--surface2);border:1px solid var(--border);
   color:var(--text2);font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;
-  cursor:pointer;transition:0.3s cubic-bezier(0.2, 0.8, 0.2, 1);white-space:nowrap;
+  cursor:pointer;transition:0.3s cubic-bezier(0.2,0.8,0.2,1);white-space:nowrap;
 }
 .tbtn:active{transform:scale(0.92)}
 .tbtn.primary{background:var(--accent);color:#fff;border:none;box-shadow:0 8px 20px rgba(0,122,255,0.25)}
@@ -99,7 +103,7 @@ body{
 .c-opt input[type=checkbox]{
   appearance:none;-webkit-appearance:none;
   width:32px;height:18px;border-radius:10px;
-  background:#3a3a3c;position:relative;cursor:pointer;transition:0.3s;
+  background:#3a3a3c;position:relative;cursor:pointer;transition:0.3s;flex-shrink:0;
 }
 .c-opt input[type=checkbox]::before{
   content:'';position:absolute;top:2px;left:2px;
@@ -108,22 +112,22 @@ body{
 .c-opt input[type=checkbox]:checked{background:var(--green)}
 .c-opt input[type=checkbox]:checked::before{left:16px}
 
-/* ── EDITOR ── */
+/* EDITOR */
 .editor-wrap{flex:1;display:flex;min-height:0;overflow:hidden;background:rgba(0,0,0,0.2)}
-.gutter{width:55px;flex-shrink:0;border-right:1px solid var(--border);padding-top:20px;text-align:right;padding-right:14px;}
+.gutter{width:55px;flex-shrink:0;border-right:1px solid var(--border);padding-top:20px;text-align:right;padding-right:14px;overflow:hidden}
 .ln{display:block;font-size:11px;line-height:26px;color:var(--text3);font-family:var(--mono);opacity:0.3}
 textarea#code{
   flex:1;background:transparent;color:var(--text2);font-family:var(--mono);font-size:15px;line-height:26px;
   padding:20px;border:none;outline:none;resize:none;tab-size:2;caret-color:var(--accent-solid);
 }
 
-/* ── PREVIEW ── */
+/* PREVIEW */
 .preview-wrap{flex-shrink:0;background:#fff;border-top:1px solid var(--border);position:relative;transition:0.4s cubic-bezier(0.4,0,0.2,1)}
 .preview-wrap.open{height:40vh}
 .preview-wrap.shut{height:0}
-.preview-bar{height:40px;background:var(--surface);display:flex;align-items:center;padding:0 20px;gap:12px;}
+.preview-bar{height:40px;background:var(--surface);display:flex;align-items:center;padding:0 20px;gap:12px}
 
-/* ── SHEET ── */
+/* SHEET / OVERLAY */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(15px);z-index:900;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:0.3s}
 .overlay.show{opacity:1;pointer-events:all}
 .sheet{
@@ -135,12 +139,14 @@ textarea#code{
 .sheet-title{font-size:18px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px}
 .sheet-sub{font-size:13px;color:var(--text3);margin-bottom:20px}
 .s-btn{
-  height:54px;border-radius:18px;background:var(--surface2);color:var(--text);font-weight:700;border:1px solid var(--border);
+  width:100%;height:54px;border-radius:18px;background:var(--surface2);color:var(--text);font-weight:700;border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:0.2s;
 }
+.s-btn+.s-btn{margin-top:12px}
 .s-btn-go{background:var(--accent);border:none;box-shadow:0 10px 25px rgba(0,122,255,0.3)}
+.s-btn-cancel{background:none;border:none;color:var(--text3)}
 
-/* ── TOAST ── */
+/* TOAST */
 .toast{
   position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(120px);
   background:var(--surface3);backdrop-filter:var(--glass);border-radius:20px;padding:14px 28px;
@@ -154,13 +160,13 @@ textarea#code{
 <div class="titlebar">
   <div class="wdots"><div class="wd r"></div><div class="wd y"></div><div class="wd g"></div></div>
   <div class="title-mid"><span class="title-text" id="prjName" onclick="renameProject()">CodePad Studio Pro</span></div>
-  <div class="save-badge" id="saveBadge"><div class="dot"></div><span id="saveTxt">saved</span></div>
+  <div class="save-badge saved" id="saveBadge"><div class="dot"></div><span id="saveTxt">saved</span></div>
 </div>
 
 <div class="tabs">
-  <div class="tab active"><i class="fa-brands fa-html5"></i>index.html</div>
-  <div class="tab"><i class="fa-brands fa-css3-alt"></i>style.css</div>
-  <div class="tab"><i class="fa-brands fa-js"></i>script.js</div>
+  <div class="tab active" data-file="index.html"><i class="fa-brands fa-html5"></i><span>index.html</span></div>
+  <div class="tab" data-file="style.css"><i class="fa-brands fa-css3-alt"></i><span>style.css</span></div>
+  <div class="tab" data-file="script.js"><i class="fa-brands fa-js"></i><span>script.js</span></div>
 </div>
 
 <div class="toolbar">
@@ -181,19 +187,19 @@ textarea#code{
 <div class="preview-wrap open" id="prvWrap">
   <div class="preview-bar">
     <span style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;flex:1">Live Preview</span>
-    <button onclick="toggleConsole()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px"><i class="fa-solid fa-terminal"></i></button>
+    <button onclick="toggleConsole()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;padding:8px"><i class="fa-solid fa-terminal"></i></button>
   </div>
   <iframe id="prvFrame" style="width:100%;height:calc(100% - 40px);border:none"></iframe>
   <div id="conWrap" style="position:absolute;bottom:0;left:0;right:0;height:0;background:#000;transition:0.3s;overflow:hidden">
     <div style="height:30px;background:#111;display:flex;align-items:center;padding:0 15px;justify-content:space-between">
       <span style="font-size:10px;font-weight:800;color:#666">CONSOLE</span>
-      <button onclick="clearConsole()" style="background:none;border:none;color:#666"><i class="fa-solid fa-ban"></i></button>
+      <button onclick="clearConsole()" style="background:none;border:none;color:#666;cursor:pointer;padding:4px"><i class="fa-solid fa-ban"></i></button>
     </div>
     <div id="conOut" style="padding:10px;font-family:var(--mono);font-size:11px;color:#30d158;overflow-y:auto;height:120px"></div>
   </div>
 </div>
 
-<div class="statusbar" style="height:28px;background:var(--surface);display:flex;align-items:center;padding:0 20px;font-size:10px;font-weight:700;color:var(--text3)">
+<div style="height:28px;background:var(--surface);display:flex;align-items:center;padding:0 20px;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0">
   <span id="sbLang">HTML</span><div style="flex:1"></div><span id="sbLn">Ln 1</span>
 </div>
 
@@ -203,7 +209,6 @@ textarea#code{
     <div class="sheet-handle"></div>
     <div class="sheet-title"><i class="fa-solid fa-wand-magic-sparkles"></i>Auto Write Studio</div>
     <div class="sheet-sub">Recording parameters set karein.</div>
-    
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:25px;background:rgba(255,255,255,0.03);padding:16px;border-radius:16px;border:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border)">
         <span style="font-size:13px;font-weight:600;color:var(--text3)">Typing Speed</span>
@@ -212,7 +217,6 @@ textarea#code{
           <span id="spdNum" style="font-size:13px;font-weight:800;color:var(--accent-solid);min-width:20px">5</span>
         </div>
       </div>
-
       <div style="display:flex;flex-direction:column;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border)">
         <span style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Recording Layout</span>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
@@ -221,43 +225,44 @@ textarea#code{
           <button class="tbtn" id="lay_wide" onclick="setLay('wide')" style="height:34px;font-size:11px">Wide</button>
         </div>
       </div>
-      
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
         <label class="c-opt"><span>Turbo</span><input type="checkbox" id="turbo" checked></label>
-        <label class="c-opt"><span>Shake</span><input type="checkbox" id="shake" checked></label>
         <label class="c-opt"><span>Sound</span><input type="checkbox" id="sound"></label>
         <label class="c-opt"><span>FX</span><input type="checkbox" id="particles" checked></label>
       </div>
     </div>
-
-    <button class="s-btn s-btn-go" onclick="launch()" style="width:100%"><i class="fa-solid fa-rocket"></i>Launch Animation</button>
-    <button class="s-btn" onclick="closeSheet()" style="width:100%;margin-top:12px;background:none;border:none;color:var(--text3)">Dismiss</button>
+    <button class="s-btn s-btn-go" onclick="launch()"><i class="fa-solid fa-rocket"></i>Launch Animation</button>
+    <button class="s-btn s-btn-cancel" onclick="closeSheet()">Dismiss</button>
   </div>
 </div>
 
+<!-- EXPORT SHEET -->
 <div class="overlay" id="exportOverlay" onclick="bgCloseExport(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title"><i class="fa-solid fa-file-export"></i>Export</div>
-    <div class="sheet-btns">
-      <button class="s-btn" onclick="downloadHTML()">Bundled HTML</button>
-      <button class="s-btn" onclick="downloadZIP()">Project ZIP</button>
-    </div>
-    <button class="s-btn" onclick="closeExport()" style="width:100%;margin-top:12px">Cancel</button>
+    <div class="sheet-sub">Download your project.</div>
+    <button class="s-btn" onclick="downloadHTML()"><i class="fa-solid fa-file-code"></i>Bundled HTML</button>
+    <button class="s-btn" onclick="downloadZIP()"><i class="fa-solid fa-file-zipper"></i>Project ZIP</button>
+    <button class="s-btn s-btn-cancel" onclick="closeExport()">Cancel</button>
   </div>
 </div>
 
+<!-- SETTINGS SHEET -->
 <div class="overlay" id="settingsOverlay" onclick="bgCloseSettings(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title"><i class="fa-solid fa-gear"></i>Settings</div>
     <div style="display:flex;flex-direction:column;gap:15px;margin-top:20px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface2);padding:14px 16px;border-radius:14px;border:1px solid var(--border)">
         <span style="font-size:14px;font-weight:600">Font Size</span>
-        <input type="range" id="fontSize" min="12" max="22" value="15" oninput="updateFontSize(this.value)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" id="fontSize" min="12" max="22" value="15" oninput="updateFontSize(this.value)">
+          <span id="fsVal" style="font-size:12px;font-weight:700;color:var(--accent-solid);min-width:28px">15px</span>
+        </div>
       </div>
     </div>
-    <button class="s-btn" onclick="closeSettings()" style="width:100%;margin-top:24px">Done</button>
+    <button class="s-btn s-btn-go" onclick="closeSettings()" style="margin-top:24px">Done</button>
   </div>
 </div>
 
@@ -266,140 +271,210 @@ textarea#code{
 <script>
 const LS='codepad_v1_files', LSP='codepad_speed', LSC='codepad_current_tab', LSN='codepad_prj_name', LSS='codepad_settings', LSL='codepad_layout';
 const ta=document.getElementById('code'), gut=document.getElementById('gutter');
-let prvOpen=true, files = { 'index.html': '', 'style.css': '', 'script.js': '' }, currentTab = 'index.html';
+let prvOpen=true, previewTimer=null;
+let files={'index.html':'','style.css':'','script.js':''};
+let currentTab='index.html';
 
+/* ── INIT ── */
 window.addEventListener('DOMContentLoaded',()=>{
-  const savedFiles = localStorage.getItem(LS);
-  if(savedFiles) files = JSON.parse(savedFiles);
-  else { const old = localStorage.getItem('codepad_v1'); if(old){ files['index.html']=old; localStorage.setItem(LS, JSON.stringify(files)); } }
+  const savedFiles=localStorage.getItem(LS);
+  if(savedFiles){ try{ files=JSON.parse(savedFiles); }catch(e){} }
+  else{ const old=localStorage.getItem('codepad_v1'); if(old){ files['index.html']=old; persist(); } }
 
-  document.getElementById('prjName').textContent = localStorage.getItem(LSN) || 'CodePad Studio Pro';
-  currentTab = localStorage.getItem(LSC) || 'index.html';
-  document.querySelectorAll('.tab').forEach(t => {
-    if(t.textContent.trim()===currentTab) t.classList.add('active'); else t.classList.remove('active');
+  document.getElementById('prjName').textContent=localStorage.getItem(LSN)||'CodePad Studio Pro';
+
+  currentTab=localStorage.getItem(LSC)||'index.html';
+  switchTab(currentTab, false);
+
+  const s=JSON.parse(localStorage.getItem(LSS)||'{"fs":15}');
+  updateFontSize(s.fs,false);
+  document.getElementById('fontSize').value=s.fs;
+  document.getElementById('fsVal').textContent=s.fs+'px';
+
+  const spd=localStorage.getItem(LSP)||'5';
+  document.getElementById('spd').value=spd;
+  document.getElementById('spdNum').textContent=spd;
+
+  setLay(localStorage.getItem(LSL)||'classic');
+
+  ['turbo','sound','particles'].forEach(o=>{
+    const val=localStorage.getItem('cp_'+o);
+    if(val!==null) document.getElementById(o).checked=(val==='true');
   });
 
-  const s = JSON.parse(localStorage.getItem(LSS) || '{"fs":15}');
-  updateFontSize(s.fs); document.getElementById('fontSize').value = s.fs;
-  
-  const spd = localStorage.getItem(LSP) || '5';
-  document.getElementById('spd').value = spd;
-  document.getElementById('spdNum').textContent = spd;
-
-  setLay(localStorage.getItem(LSL) || 'classic');
-
-  ['turbo','shake','sound','particles'].forEach(o => {
-    const val = localStorage.getItem('cp_'+o);
-    if(val !== null) document.getElementById(o).checked = val === 'true';
-  });
-
-  ta.value = files[currentTab] || ''; meta(); buildGut(); refreshPreview();
+  ta.value=files[currentTab]||'';
+  updateMeta(); buildGut(); refreshPreview();
+  setSaved(true);
 });
 
+/* ── TAB SWITCHING (icon-safe) ── */
+function switchTab(name, save=true){
+  if(save) files[currentTab]=ta.value;
+  currentTab=name;
+  if(save) localStorage.setItem(LSC,currentTab);
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.file===currentTab);
+  });
+  ta.value=files[currentTab]||'';
+  document.getElementById('sbLang').textContent=currentTab.split('.').pop().toUpperCase();
+  buildGut(); updateMeta();
+}
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>switchTab(t.dataset.file));
+});
+
+/* ── EDITOR EVENTS ── */
 ta.addEventListener('input',()=>{
-  files[currentTab] = ta.value;
-  localStorage.setItem(LS, JSON.stringify(files));
-  localStorage.setItem('codepad_v1', ta.value);
-  meta(); buildGut(); refreshPreview();
+  files[currentTab]=ta.value;
+  setSaved(false);
+  updateMeta(); buildGut();
+  // Debounced preview refresh (100ms)
+  clearTimeout(previewTimer);
+  previewTimer=setTimeout(()=>{ persist(); refreshPreview(); setSaved(true); },600);
 });
 
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    currentTab = t.textContent.trim();
-    localStorage.setItem(LSC, currentTab);
-    ta.value = files[currentTab] || '';
-    document.getElementById('sbLang').textContent = currentTab.split('.').pop().toUpperCase();
-    buildGut(); meta();
-  });
-});
-
-function updateSpeed(v) { document.getElementById('spdNum').textContent = v; localStorage.setItem(LSP, v); }
-
-function setLay(l) {
-  ['classic','focus','wide'].forEach(x => document.getElementById('lay_'+x).classList.remove('primary'));
-  document.getElementById('lay_'+l).classList.add('primary');
-  localStorage.setItem(LSL, l);
+function persist(){
+  localStorage.setItem(LS,JSON.stringify(files));
+  localStorage.setItem('codepad_v1',files['index.html']||'');
 }
 
-function renameProject() {
-  const n = prompt("Naya naam:", document.getElementById('prjName').textContent);
-  if(n){ document.getElementById('prjName').textContent = n; localStorage.setItem(LSN, n); toast('Name Updated!'); }
+function setSaved(saved){
+  const b=document.getElementById('saveBadge');
+  const t=document.getElementById('saveTxt');
+  if(saved){ b.className='save-badge saved'; t.textContent='saved'; }
+  else{ b.className='save-badge dirty'; t.textContent='unsaved'; }
 }
 
-function formatCode() {
-  let indent = 0;
-  ta.value = ta.value.split('\n').map(l => {
-    l = l.trim(); if(!l) return '';
-    if(l.match(/^<\//) || l.match(/^\}/)) indent = Math.max(0, indent - 1);
-    const res = '  '.repeat(indent) + l;
-    if((l.match(/<[^\/!][^>]*[^\/]>$/) && !l.match(/<input|img|br|hr|link|meta/)) || l.match(/\{$/)) indent++;
-    return res;
-  }).join('\n');
-  files[currentTab] = ta.value; saveCode(); toast('Formatted!');
+/* ── TOOLBAR ACTIONS ── */
+function saveCode(){
+  files[currentTab]=ta.value;
+  persist(); setSaved(true); toast('Saved! ✓');
 }
 
-function saveCode(){ localStorage.setItem(LS, JSON.stringify(files)); toast('Saved!'); }
+function formatCode(){
+  const ext=currentTab.split('.').pop();
+  if(ext==='html'){
+    let indent=0;
+    ta.value=ta.value.split('\n').map(l=>{
+      l=l.trim(); if(!l) return '';
+      if(l.match(/^<\//) || l.match(/^\}/)) indent=Math.max(0,indent-1);
+      const res='  '.repeat(indent)+l;
+      if((l.match(/<[^\/!][^>]*[^\/]>$/)&&!l.match(/<input|img|br|hr|link|meta/i))||l.match(/\{$/)) indent++;
+      return res;
+    }).join('\n');
+  } else if(ext==='css'||ext==='js'){
+    // Basic indent normalize
+    ta.value=ta.value.split('\n').map(l=>l.trimEnd()).join('\n').replace(/\n{3,}/g,'\n\n');
+  }
+  files[currentTab]=ta.value; saveCode(); buildGut(); toast('Formatted!');
+}
+
 function copyCode(){ navigator.clipboard.writeText(ta.value).then(()=>toast('Copied!')); }
-function meta(){ document.getElementById('sbLn').textContent = 'Ln ' + ta.value.split('\n').length; }
+
+function updateMeta(){ document.getElementById('sbLn').textContent='Ln '+(ta.value.split('\n').length); }
+
 function buildGut(){
-  const count = ta.value.split('\n').length;
-  let html = ''; for(let i=1; i<=count; i++) html += `<span class="ln">${i}</span>`;
-  gut.innerHTML = html;
+  const count=ta.value.split('\n').length;
+  let h=''; for(let i=1;i<=count;i++) h+=`<span class="ln">${i}</span>`;
+  gut.innerHTML=h;
 }
 
+/* ── PREVIEW ── */
 function refreshPreview(){
   if(!prvOpen) return;
-  const conScript = `<script>const _log=console.log;console.log=function(...args){window.parent.postMessage({type:'log',msg:args.join(' ')},'*');};window.onerror=function(m,u,l){window.parent.postMessage({type:'err',msg:m+" (Ln:"+l+")"},'*');};<\/script>`;
-  let combined = conScript + (files['index.html']||'');
-  if(files['style.css']) combined += `<style>${files['style.css']}</style>`;
-  if(files['script.js']) combined += `<script>${files['script.js']}<\/script>`;
-  document.getElementById('prvFrame').srcdoc = combined;
+  const conScript=`<script>console.log=(function(orig){return function(...a){window.parent.postMessage({type:'log',msg:a.join(' ')},'*');orig.apply(console,a);}})(console.log);window.onerror=function(m,u,l){window.parent.postMessage({type:'err',msg:m+' (Ln:'+l+')'},'*');};<\/script>`;
+  let html=files['index.html']||'';
+  // Inject CSS and JS into the HTML if not already structured
+  const combined=conScript+html+(files['style.css']?`<style>${files['style.css']}</style>`:'')+
+    (files['script.js']?`<script>${files['script.js']}<\/script>`:'');
+  document.getElementById('prvFrame').srcdoc=combined;
 }
 
-window.addEventListener('message', e => {
-  if(e.data.type==='log' || e.data.type==='err'){
-    const item = document.createElement('div'); item.textContent = '> ' + e.data.msg;
+window.addEventListener('message',e=>{
+  if(e.data&&(e.data.type==='log'||e.data.type==='err')){
+    const item=document.createElement('div'); item.textContent='> '+e.data.msg;
     if(e.data.type==='err') item.style.color='var(--red)';
-    document.getElementById('conOut').appendChild(item);
+    const co=document.getElementById('conOut'); co.appendChild(item); co.scrollTop=co.scrollHeight;
   }
 });
 
-function toggleConsole(){ const c = document.getElementById('conWrap'); c.style.height = c.style.height==='150px'?'0':'150px'; }
-function clearConsole(){ document.getElementById('conOut').innerHTML = ''; }
-function togglePreview(){ prvOpen = !prvOpen; document.getElementById('prvWrap').className = prvOpen?'preview-wrap open':'preview-wrap shut'; }
+function toggleConsole(){ const c=document.getElementById('conWrap'); c.style.height=c.style.height==='150px'?'0':'150px'; }
+function clearConsole(){ document.getElementById('conOut').innerHTML=''; }
+function togglePreview(){ prvOpen=!prvOpen; document.getElementById('prvWrap').className=prvOpen?'preview-wrap open':'preview-wrap shut'; if(prvOpen) refreshPreview(); }
+
+/* ── SETTINGS ── */
+function updateFontSize(v, save=true){
+  ta.style.fontSize=v+'px';
+  document.getElementById('fsVal').textContent=v+'px';
+  if(save) localStorage.setItem(LSS,JSON.stringify({fs:+v}));
+}
 function openSettings(){ document.getElementById('settingsOverlay').classList.add('show'); }
 function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('show'); }
-function updateFontSize(v){ ta.style.fontSize = v+'px'; localStorage.setItem(LSS, JSON.stringify({fs:v})); }
-function openExport(){ document.getElementById('exportOverlay').classList.add('show'); }
-function closeExport(){ document.getElementById('exportOverlay').classList.remove('show'); }
-function openSheet(){ document.getElementById('overlay').classList.add('show'); }
-function closeSheet(){ document.getElementById('overlay').classList.remove('show'); }
-function launch(){ 
-  ['turbo','shake','sound','particles'].forEach(o => {
-    localStorage.setItem('cp_'+o, document.getElementById(o).checked);
-  });
-  window.open('auto.html','_blank'); 
-}
-function bgClose(e){ if(e.target.id==='overlay') closeSheet(); }
-function bgCloseExport(e){ if(e.target.id==='exportOverlay') closeExport(); }
 function bgCloseSettings(e){ if(e.target.id==='settingsOverlay') closeSettings(); }
 
-function toast(msg){
-  const t = document.getElementById('toast'); t.querySelector('span').textContent = msg;
-  t.classList.add('up'); setTimeout(()=>t.classList.remove('up'), 2000);
-}
+/* ── EXPORT ── */
+function openExport(){ document.getElementById('exportOverlay').classList.add('show'); }
+function closeExport(){ document.getElementById('exportOverlay').classList.remove('show'); }
+function bgCloseExport(e){ if(e.target.id==='exportOverlay') closeExport(); }
 
 function downloadHTML(){
-  const combined = `<!DOCTYPE html><html><head><style>${files['style.css']||''}</style></head><body>${files['index.html']||''}<script>${files['script.js']||''}<\/script></body></html>`;
-  const blob = new Blob([combined], {type:'text/html'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'index.html'; a.click();
+  closeExport();
+  const html=files['index.html']||'';
+  const css=files['style.css']?`<style>${files['style.css']}</style>`:'';
+  const js=files['script.js']?`<script>${files['script.js']}<\/script>`:'';
+  // Insert CSS in head, JS before /body
+  let out=html;
+  if(css){ out=out.includes('</head>')?out.replace('</head>',css+'</head>'):css+out; }
+  if(js){ out=out.includes('</body>')?out.replace('</body>',js+'</body>'):out+js; }
+  if(!out.startsWith('<!DOCTYPE')){ out='<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n'+css+'</head>\n<body>\n'+html+'\n'+js+'\n</body>\n</html>'; }
+  const blob=new Blob([out],{type:'text/html'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(localStorage.getItem(LSN)||'project')+'.html'; a.click();
 }
+
 async function downloadZIP(){
-  const zip = new JSZip(); zip.file("index.html", files['index.html']); zip.file("style.css", files['style.css']); zip.file("script.js", files['script.js']);
-  const content = await zip.generateAsync({type:"blob"});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(content); a.download = 'project.zip'; a.click();
+  closeExport();
+  try{
+    const zip=new JSZip();
+    zip.file('index.html',files['index.html']||'');
+    zip.file('style.css',files['style.css']||'');
+    zip.file('script.js',files['script.js']||'');
+    const content=await zip.generateAsync({type:'blob'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(content); a.download=(localStorage.getItem(LSN)||'project')+'.zip'; a.click();
+  } catch(e){ toast('ZIP failed: '+e.message); }
+}
+
+/* ── AUTO WRITE SHEET ── */
+function updateSpeed(v){ document.getElementById('spdNum').textContent=v; localStorage.setItem(LSP,v); }
+function setLay(l){
+  ['classic','focus','wide'].forEach(x=>document.getElementById('lay_'+x).classList.remove('primary'));
+  document.getElementById('lay_'+l).classList.add('primary');
+  localStorage.setItem(LSL,l);
+}
+function openSheet(){ document.getElementById('overlay').classList.add('show'); }
+function closeSheet(){ document.getElementById('overlay').classList.remove('show'); }
+function bgClose(e){ if(e.target.id==='overlay') closeSheet(); }
+
+function launch(){
+  ['turbo','sound','particles'].forEach(o=>{
+    localStorage.setItem('cp_'+o,document.getElementById(o).checked);
+  });
+  // Save latest code first
+  files[currentTab]=ta.value; persist();
+  closeSheet();
+  window.open('auto.html','_blank');
+}
+
+/* ── PROJECT NAME ── */
+function renameProject(){
+  const n=prompt('Naya naam:',document.getElementById('prjName').textContent);
+  if(n&&n.trim()){ document.getElementById('prjName').textContent=n.trim(); localStorage.setItem(LSN,n.trim()); toast('Name Updated!'); }
+}
+
+/* ── TOAST ── */
+function toast(msg){
+  const t=document.getElementById('toast'); t.querySelector('span').textContent=msg;
+  t.classList.add('up'); setTimeout(()=>t.classList.remove('up'),2000);
 }
 </script>
 </body>

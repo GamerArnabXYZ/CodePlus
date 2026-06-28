@@ -331,7 +331,8 @@ window.addEventListener('DOMContentLoaded',()=>{
 
   ['turbo','sound','particles'].forEach(o=>{
     const val=localStorage.getItem('cp_'+o);
-    if(val!==null) document.getElementById(o).checked=(val==='true');
+    const el = document.getElementById(o);
+    if(el) el.checked=(val==='true');
   });
 
   ta.value=files[currentTab]||'';

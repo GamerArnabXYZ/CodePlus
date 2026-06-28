@@ -198,8 +198,8 @@ cur.className='cur';
 // Optimized: Cache localStorage value
 let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
 
-// Speed table: index 0 = speed 1 (slowest), index 19 = speed 20 (fastest)
-const delays=[200,160,130,105,85,68,52,40,30,22,16,12,8,5,3,2,1.5,1,0.5,0]; // Original delays
+// Speed table: index 0 (slow) to index 19 (fastest)
+  const delays=[200,170,140,110,90,70,55,40,30,22,16,12,8,5,3,2,1.5,1,0.5,0.1];
 
 /* ── AUDIO ── */
 let audioCtx=null, clickBuffer=null;
@@ -305,16 +305,11 @@ function tick(){
   out.textContent = currentTypedContent; // Only update raw text for speed
   out.appendChild(cur);
 
-  // Dynamic delay calculation based on turbo setting
-  
-  if(!isSoundEnabled || !clickBuffer || !audioCtx || audioCtx.state !== 'running') return; // Use cached value
-  
-
+  // Dynamic delay calculation
   const spdSetting = parseInt(localStorage.getItem(LSP) || '5');
   const spdIdx = Math.min(Math.max(spdSetting, 1), 20) - 1;
+  const delay = delays[spdIdx];
   
-  
-
   timer = setTimeout(tick, delay);
 }
 

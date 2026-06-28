@@ -300,6 +300,7 @@ function tick(){
 
   // Live Preview Update - force update if preview is visible
   if(prvWrap.style.height !== '0px' && prvWrap.style.height !== '0' && prvWrap.style.height !== '') {
+    // We update the preview with current buffer content
     renderPreview(code.slice(0, idx));
   }
   

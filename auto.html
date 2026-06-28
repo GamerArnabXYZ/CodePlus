@@ -204,15 +204,13 @@ let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
 /* ── AUDIO ── */
 let audioCtx=null, clickBuffer=null;
 async function initAudio(){
+  if(audioCtx) return;
   try{
-    if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==='suspended') await audioCtx.resume();
-    // New turbo delays (defined globally as it's used in tick())
-      // Filename may have spaces — use encoded path
-      const resp=await fetch('keyboard%20affect.wav');
-      if(resp.ok) clickBuffer=await audioCtx.decodeAudioData(await resp.arrayBuffer());
-    }
-  } catch(e){ console.warn('Audio init failed:',e); }
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const resp = await fetch('keyboard.wav'); // Ensure file is named correctly
+    const arr = await resp.arrayBuffer();
+    clickBuffer = await audioCtx.decodeAudioData(arr);
+  } catch(e){ console.warn('Audio system inactive:', e); }
 }
 function playClick(){
   const turboDelays=[100,80,65,52,42,34,26,20,15,11,8,6,4,2.5,1.5,1,0.75,0.5,0.25,0];

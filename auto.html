@@ -201,9 +201,9 @@ cur.className='cur';
 let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
 let files = JSON.parse(localStorage.getItem('codepad_v1_files') || '{"index.html":""}');
 
-// Speed handling: Fixed math logic for smoother typing
+// Speed handling: Optimized logic for 1-50 scale
   const spdSetting = parseInt(localStorage.getItem(LSP) || '5');
-  const currentDelay = Math.max(10, 350 - (spdSetting * 15));
+  const currentDelay = Math.max(5, 200 - (spdSetting * 3));
 
 /* ── AUDIO ── */
 let audioCtx=null, clickBuffer=null;
@@ -362,7 +362,11 @@ const prvFrame = document.getElementById('prvFrame'); // Cached
 function togglePreview(){
   const isOpen=prvWrap.style.height!=='0px'&&prvWrap.style.height!==''&&prvWrap.style.height!=='0';
   prvWrap.style.height=isOpen?'0':'28vh';
-  if(!isOpen) prvFrame.srcdoc=code.slice(0,idx);
+  if(!isOpen) {
+    prvFrame.srcdoc = code.slice(0, idx);
+    // Force refresh the frame content for better rendering
+    prvFrame.contentWindow.location.reload();
+  }
 }
 
 /* ── CONFETTI ── */

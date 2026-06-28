@@ -369,9 +369,13 @@ ta.addEventListener('input',()=>{
   clearTimeout(gutUpdateTimer);
   gutUpdateTimer = setTimeout(buildGut, 100);
 
-  // Debounced preview refresh (600ms) and persist (already good)
+  // Debounced preview refresh (600ms) and persist
   clearTimeout(previewTimer);
-  previewTimer=setTimeout(()=>{ persist(); refreshPreview(); setSaved(true); },600);
+  previewTimer=setTimeout(()=>{ 
+      persist(); 
+      refreshPreview(); 
+      setSaved(true); 
+  },600);
 });
 
 function persist(){

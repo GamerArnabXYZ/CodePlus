@@ -197,6 +197,7 @@ cur.className='cur';
 
 // Optimized: Cache localStorage value
 let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
+let files = JSON.parse(localStorage.getItem('codepad_v1_files') || '{"index.html":""}');
 
 // Speed table: index 0 (slow) to index 19 (fastest)
   const delays=[200,170,140,110,90,70,55,40,30,22,16,12,8,5,3,2,1.5,1,0.5,0.1];
@@ -250,7 +251,11 @@ function highlight(text){
 
 /* ── INIT ── */
 window.addEventListener('DOMContentLoaded',()=>{
-  code=localStorage.getItem(LS)||'';
+  // Merge files for playback
+  code = (files['index.html'] || '') + 
+         (files['style.css'] ? `\n\n<style>\n${files['style.css']}\n</style>` : '') +
+         (files['script.js'] ? `\n\n<script>\n${files['script.js']}\n<\/script>` : '');
+         
   const layout=localStorage.getItem(LSL)||'classic';
   document.body.classList.add('lay-'+layout);
 

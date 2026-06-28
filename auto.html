@@ -106,17 +106,19 @@ body.recording .rec-btn{opacity:0;pointer-events:none;transition:opacity 0.5s}
 .rec-btn.active{background:rgba(255,59,48,0.35);box-shadow:0 0 20px rgba(255,59,48,0.4)}
 
 /* ── SYNTAX COLORS ── */
-.tag{color:#ff79c6;text-shadow:0 0 12px rgba(255,121,198,0.4)}
-.attr{color:#50fa7b;text-shadow:0 0 8px rgba(80,250,123,0.25)}
+.tag{color:#ff79c6}
+.attr{color:#8be9fd}
 .val{color:#f1fa8c}
 .com{color:#6272a4;font-style:italic}
-pre#out{white-space:pre-wrap;word-break:break-all}
+.key{color:#ff79c6}
+.func{color:#50fa7b}
+pre#out{white-space:pre-wrap;word-break:break-all;display:inline}
 
 .cur{
-  display:inline-block;width:10px;height:1.2em;
-  background:var(--accent);vertical-align:text-bottom;
-  animation:cur 1s step-start infinite;
-  box-shadow:0 0 12px var(--accent);border-radius:2px;margin-left:2px;
+  display:inline-block;width:8px;height:1.2em;
+  background:var(--accent);vertical-align:middle;
+  animation:cur 0.8s infinite;
+  box-shadow:0 0 8px var(--accent);margin-left:4px;
 }
 @keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
 

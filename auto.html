@@ -201,10 +201,9 @@ cur.className='cur';
 let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
 let files = JSON.parse(localStorage.getItem('codepad_v1_files') || '{"index.html":""}');
 
-// Speed table: index 0 (slow) to index 49 (fastest)
+// Speed handling: 1-20 scale
   const spdSetting = parseInt(localStorage.getItem(LSP) || '5');
-  // Exponential delay curve: 500ms down to 10ms
-  const currentDelay = Math.max(10, 500 - (spdSetting * 10));
+  const currentDelay = Math.max(20, 300 - (spdSetting * 14));
 
 /* ── AUDIO ── */
 let audioCtx=null, clickBuffer=null;
@@ -263,18 +262,18 @@ window.addEventListener('DOMContentLoaded',()=>{
   // Extra items hidden by default — triple-tap reveals them
   document.body.classList.add('recording');
 
-  // Font size — controlled from index.html's Auto Write Studio
+  // Font size & Layout setup
   const autoFs=localStorage.getItem(LSAF)||'16';
   updateFS(autoFs);
+  document.body.className = 'lay-' + (localStorage.getItem(LSL) || 'classic');
 
   // Cinematic intro
   setTimeout(()=>{
     document.getElementById('intro').classList.add('hide');
-    if(code){
-      // Starts paused — single tap to begin typing
+    if(code.trim()){
       setState('paused');
     } else {
-      out.textContent='// No code found.\n// Go back to CodePad and write something!';
+      out.textContent='// No content found. \n// Write code in index.html and Launch again.';
     }
   },1800);
 

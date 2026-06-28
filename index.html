@@ -380,7 +380,9 @@ ta.addEventListener('input',()=>{
 
 function persist(){
   localStorage.setItem(LS,JSON.stringify(files));
-  localStorage.setItem('codepad_v1',files['index.html']||'');
+  // Keep compatibility for older versions
+  localStorage.setItem('codepad_v1_files', JSON.stringify(files));
+  localStorage.setItem('codepad_v1', files['index.html']||'');
 }
 
 function setSaved(saved){

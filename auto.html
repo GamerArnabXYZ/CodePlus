@@ -201,9 +201,9 @@ cur.className='cur';
 let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
 let files = JSON.parse(localStorage.getItem('codepad_v1_files') || '{"index.html":""}');
 
-// Speed handling: 1-20 scale
+// Speed handling: Fixed math logic for smoother typing
   const spdSetting = parseInt(localStorage.getItem(LSP) || '5');
-  const currentDelay = Math.max(20, 300 - (spdSetting * 14));
+  const currentDelay = Math.max(10, 350 - (spdSetting * 15));
 
 /* ── AUDIO ── */
 let audioCtx=null, clickBuffer=null;
@@ -320,6 +320,7 @@ function setState(s){
 function toggleRec(){
   const isRec=document.body.classList.toggle('recording');
   document.getElementById('recBtn').classList.toggle('active',isRec);
+  if(isRec) console.log("REC_MODE_ACTIVE: Start Screen Recording");
 }
 
 /* ── TAP GESTURES ── */

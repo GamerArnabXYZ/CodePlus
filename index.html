@@ -489,7 +489,13 @@ async function downloadZIP(){
 }
 
 /* ── AUTO WRITE SHEET ── */
-function updateSpeed(v){ spdNumSpan.textContent=v; localStorage.setItem(LSP,v); } // Use cached spdNumSpan
+function updateSpeed(v){ 
+    spdNumSpan.textContent=v; 
+    localStorage.setItem(LSP,v); 
+    // Immediate persist for auto.html
+    const f=JSON.parse(localStorage.getItem(LS));
+    localStorage.setItem(LS, JSON.stringify(f));
+}
 function updateAutoFS(v){ autoFsNumSpan.textContent=v+'px'; localStorage.setItem(LSAF,v); } // Use cached autoFsNumSpan
 function setLay(l){
   ['classic','focus','wide'].forEach(x=>document.getElementById('lay_'+x).classList.remove('primary'));

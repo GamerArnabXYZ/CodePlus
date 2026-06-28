@@ -195,6 +195,9 @@ const card=document.getElementById('card');
 const cur=document.createElement('span');
 cur.className='cur';
 
+// Optimized: Cache localStorage value
+let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
+
 // Speed table: index 0 = speed 1 (slowest), index 19 = speed 20 (fastest)
 const delays=[200,160,130,105,85,68,52,40,30,22,16,12,8,5,3,2,1.5,1,0.5,0];
 
@@ -204,7 +207,7 @@ async function initAudio(){
   try{
     if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
     if(audioCtx.state==='suspended') await audioCtx.resume();
-    if(!clickBuffer && localStorage.getItem('cp_sound')==='true'){
+    if(!clickBuffer && isSoundEnabled){ // Use cached value
       // Filename may have spaces — use encoded path
       const resp=await fetch('keyboard%20affect.wav');
       if(resp.ok) clickBuffer=await audioCtx.decodeAudioData(await resp.arrayBuffer());
@@ -212,7 +215,7 @@ async function initAudio(){
   } catch(e){ console.warn('Audio init failed:',e); }
 }
 function playClick(){
-  if(localStorage.getItem('cp_sound')!=='true'||!clickBuffer||!audioCtx) return;
+  if(!isSoundEnabled ||!clickBuffer||!audioCtx) return; // Use cached value
   try{
     const src=audioCtx.createBufferSource(); src.buffer=clickBuffer;
     const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.12,audioCtx.currentTime);
@@ -261,7 +264,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{
     document.getElementById('intro').classList.add('hide');
     if(code){
-      out.innerHTML='';
+      // out.innerHTML=''; // Not needed with new tick logic, it's just raw text initially
       out.appendChild(cur);
       // Init audio on first interaction
       document.body.addEventListener('touchstart',initAudio,{once:true,passive:true});
@@ -277,49 +280,57 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 /* ── TYPING ENGINE ── */
+let currentTypedContent = ''; // Optimized: Store raw text for fast updates
+
 function tick(){
-  if(!running||paused) return;
-  if(idx>=code.length){
-    running=false;
+  if(!running || paused) return;
+  if(idx >= code.length){
+    running = false;
+    // Typing complete: Now apply final full highlighting
+    out.innerHTML = highlight(code); // Full highlight to the entire code
+    out.appendChild(cur); // Re-append cursor (ensure it's after HTML)
     setState('done');
     card.classList.add('done');
-    if(localStorage.getItem('cp_particles')==='true') confettiBurst();
+    if(localStorage.getItem('cp_particles') === 'true') confettiBurst();
     return;
   }
 
-  const ch=code[idx]; idx++;
-
-  // Efficient: only append new char highlighted span, not full re-render
-  // But highlight needs context — re-render up to idx with full highlight
-  // For performance: batch at newlines or every 50 chars
-  out.innerHTML=highlight(code.slice(0,idx));
-  out.appendChild(cur);
+  const ch = code[idx];
+  currentTypedContent += ch; // Append raw character to our buffer
+  idx++;
 
   playClick();
 
+  // Fast UI update: Update textContent directly. This is extremely performant.
+  out.textContent = currentTypedContent;
+  out.appendChild(cur); // Cursor ko text ke baad add karein
+
   cur.scrollIntoView({block:'nearest',behavior:'auto'});
-  if(ch==='>' || idx%80===0) renderPreview(code.slice(0,idx));
+  
+  // Preview ko tabhi render karein jab necessary ho
+  if(ch === '>' || idx % 80 === 0) renderPreview(code.slice(0, idx));
 
-  const spdSetting=parseInt(localStorage.getItem(LSP)||'5');
-  const spdIdx=Math.min(Math.max(spdSetting,1),20)-1;
-  let delay=delays[spdIdx];
-  if(localStorage.getItem('cp_turbo')==='true') delay=Math.max(0,delay*0.5);
+  const spdSetting = parseInt(localStorage.getItem(LSP) || '5');
+  const spdIdx = Math.min(Math.max(spdSetting, 1), 20) - 1;
+  let delay = delays[spdIdx];
+  if(localStorage.getItem('cp_turbo') === 'true') delay = Math.max(0, delay * 0.5);
 
-  timer=setTimeout(tick,delay);
+  timer = setTimeout(tick, delay);
 }
 
 /* ── CONTROLS ── */
+const ctrlLbl = document.getElementById('ctrlLbl'); // Cached
+const ctrlIco = document.getElementById('ctrlIco'); // Cached
+
 function toggle(){
   if(paused){ paused=false; running=true; setState('running'); tick(); }
   else { paused=true; setState('paused'); if(timer) clearTimeout(timer); }
 }
 
 function setState(s){
-  const lbl=document.getElementById('ctrlLbl');
-  const ico=document.getElementById('ctrlIco');
-  if(s==='running'){ lbl.textContent='Stop'; ico.className='fa-solid fa-pause'; }
-  else if(s==='paused'){ lbl.textContent='Resume'; ico.className='fa-solid fa-play'; }
-  else if(s==='done'){ lbl.textContent='Done'; ico.className='fa-solid fa-check'; }
+  if(s==='running'){ ctrlLbl.textContent='Stop'; ctrlIco.className='fa-solid fa-pause'; }
+  else if(s==='paused'){ ctrlLbl.textContent='Resume'; ctrlIco.className='fa-solid fa-play'; }
+  else if(s==='done'){ ctrlLbl.textContent='Done'; ctrlIco.className='fa-solid fa-check'; }
 }
 
 function toggleRec(){
@@ -360,11 +371,13 @@ function renderPreview(html){
   document.getElementById('prvFrame').srcdoc=html;
 }
 
+const prvWrap = document.getElementById('prvWrap'); // Cached
+const prvFrame = document.getElementById('prvFrame'); // Cached
+
 function togglePreview(){
-  const p=document.getElementById('prvWrap');
-  const isOpen=p.style.height!=='0px'&&p.style.height!==''&&p.style.height!=='0';
-  p.style.height=isOpen?'0':'28vh';
-  if(!isOpen) document.getElementById('prvFrame').srcdoc=code.slice(0,idx);
+  const isOpen=prvWrap.style.height!=='0px'&&prvWrap.style.height!==''&&prvWrap.style.height!=='0';
+  prvWrap.style.height=isOpen?'0':'28vh';
+  if(!isOpen) prvFrame.srcdoc=code.slice(0,idx);
 }
 
 /* ── CONFETTI ── */

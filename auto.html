@@ -281,30 +281,24 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 /* ── TYPING ENGINE ── */
-let currentTypedContent = ''; // Optimized: Store raw text for fast updates
-
 function tick(){
   if(!running || paused) return;
   if(idx >= code.length){
     running = false;
-    // Typing complete: Now apply final full highlighting
-    out.innerHTML = highlight(code); // Full highlight to the entire code
-    out.appendChild(cur); // Re-append cursor (ensure it's after HTML)
     setState('done');
     card.classList.add('done');
     if(localStorage.getItem('cp_particles') === 'true') confettiBurst();
     return;
   }
 
-  const ch = code[idx];
-  currentTypedContent += ch; // Append raw character to our buffer
+  // Optimized Typing Logic
+  const chunk = code.slice(0, idx + 1);
+  out.innerHTML = highlight(chunk) + '<span class="cur"></span>';
+  
+  // Auto-scroll logic
+  cs.scrollTop = cs.scrollHeight;
+  
   idx++;
-
-  // Full highlighting will be applied only once at the end.
-  out.textContent = currentTypedContent; // Only update raw text for speed
-  out.appendChild(cur);
-
-  // Dynamic delay calculation using pre-cached variable
   timer = setTimeout(tick, currentDelay);
 }
 

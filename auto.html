@@ -265,11 +265,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{
     document.getElementById('intro').classList.add('hide');
     if(code){
-      
-      // Only fetch clickBuffer once and if sound is enabled
-      // Init audio on first interaction
-      document.body.addEventListener('touchstart',initAudio,{once:true,passive:true});
-      document.body.addEventListener('click',initAudio,{once:true});
       // Starts paused — single tap to begin typing
       setState('paused');
     } else {
@@ -299,8 +294,6 @@ function tick(){
   const ch = code[idx];
   currentTypedContent += ch; // Append raw character to our buffer
   idx++;
-
-  playClick();
 
   // Full highlighting will be applied only once at the end.
   out.textContent = currentTypedContent; // Only update raw text for speed

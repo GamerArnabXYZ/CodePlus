@@ -201,11 +201,10 @@ cur.className='cur';
 let isSoundEnabled = (localStorage.getItem('cp_sound') === 'true');
 let files = JSON.parse(localStorage.getItem('codepad_v1_files') || '{"index.html":""}');
 
-// Speed table: index 0 (slow) to index 19 (fastest)
-  const delays=[200,170,140,110,90,70,55,40,30,22,16,12,8,5,3,2,1.5,1,0.5,0.1];
+// Speed table: index 0 (slow) to index 49 (fastest)
   const spdSetting = parseInt(localStorage.getItem(LSP) || '5');
-  const spdIdx = Math.min(Math.max(spdSetting, 1), 20) - 1;
-  const currentDelay = delays[spdIdx];
+  // Exponential delay curve: 500ms down to 10ms
+  const currentDelay = Math.max(10, 500 - (spdSetting * 10));
 
 /* ── AUDIO ── */
 let audioCtx=null, clickBuffer=null;

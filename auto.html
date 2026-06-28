@@ -298,8 +298,8 @@ function tick(){
   // Auto-scroll logic
   cs.scrollTop = cs.scrollHeight;
 
-  // Live Preview Update
-  if(prvWrap.style.height !== '0px' && prvWrap.style.height !== '0') {
+  // Live Preview Update - force update if preview is visible
+  if(prvWrap.style.height !== '0px' && prvWrap.style.height !== '0' && prvWrap.style.height !== '') {
     renderPreview(code.slice(0, idx));
   }
   
@@ -358,7 +358,12 @@ function updateFS(v){
 function renderPreview(html){
   const prv=document.getElementById('prvWrap');
   if(prv.style.height==='0px'||prv.style.height==='0'||!prv.style.height) return;
-  document.getElementById('prvFrame').srcdoc=html;
+  
+  // Use a more robust way to update the iframe content live
+  const frame = document.getElementById('prvFrame');
+  if (frame.srcdoc !== html) {
+    frame.srcdoc = html;
+  }
 }
 
 const prvWrap = document.getElementById('prvWrap'); // Cached

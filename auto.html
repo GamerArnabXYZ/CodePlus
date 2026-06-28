@@ -297,6 +297,11 @@ function tick(){
   
   // Auto-scroll logic
   cs.scrollTop = cs.scrollHeight;
+
+  // Live Preview Update
+  if(prvWrap.style.height !== '0px' && prvWrap.style.height !== '0') {
+    renderPreview(code.slice(0, idx));
+  }
   
   idx++;
   timer = setTimeout(tick, currentDelay);

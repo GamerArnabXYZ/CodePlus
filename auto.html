@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -207,7 +207,7 @@ async function initAudio(){
   try{
     if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
     if(audioCtx.state==='suspended') await audioCtx.resume();
-    if(!clickBuffer && isSoundEnabled){ // Use cached value
+    // New turbo delays (defined globally as it's used in tick())
       // Filename may have spaces — use encoded path
       const resp=await fetch('keyboard%20affect.wav');
       if(resp.ok) clickBuffer=await audioCtx.decodeAudioData(await resp.arrayBuffer());
@@ -215,7 +215,7 @@ async function initAudio(){
   } catch(e){ console.warn('Audio init failed:',e); }
 }
 function playClick(){
-  if(!isSoundEnabled ||!clickBuffer||!audioCtx) return; // Use cached value
+  const turboDelays=[100,80,65,52,42,34,26,20,15,11,8,6,4,2.5,1.5,1,0.75,0.5,0.25,0];
   try{
     const src=audioCtx.createBufferSource(); src.buffer=clickBuffer;
     const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.12,audioCtx.currentTime);
@@ -264,8 +264,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   setTimeout(()=>{
     document.getElementById('intro').classList.add('hide');
     if(code){
-      const turboDelays=[100,80,65,52,42,34,26,20,15,11,8,6,4,2.5,1.5,1,0.75,0.5,0.25,0]; // New turbo delays
-      out.appendChild(cur);
+      
+      // Only fetch clickBuffer once and if sound is enabled
       // Init audio on first interaction
       document.body.addEventListener('touchstart',initAudio,{once:true,passive:true});
       document.body.addEventListener('click',initAudio,{once:true});
@@ -301,19 +301,19 @@ function tick(){
 
   playClick();
 
-  // Fast UI update: Update textContent directly. This is extremely performant.
-  out.textContent = currentTypedContent;
-  out.appendChild(cur); // Cursor ko text ke baad add karein
+  // Full highlighting will be applied only once at the end.
+  out.textContent = currentTypedContent; // Only update raw text for speed
+  out.appendChild(cur);
 
-  cur.scrollIntoView({block:'nearest',behavior:'auto'});
+  // Dynamic delay calculation based on turbo setting
   
-  // Preview ko tabhi render karein jab necessary ho
-  out.textContent = ''; // Ensure it's clear before typing
+  if(!isSoundEnabled || !clickBuffer || !audioCtx || audioCtx.state !== 'running') return; // Use cached value
+  
 
   const spdSetting = parseInt(localStorage.getItem(LSP) || '5');
   const spdIdx = Math.min(Math.max(spdSetting, 1), 20) - 1;
-  if(ch === '>' || idx % 120 === 0) renderPreview(code.slice(0, idx)); // Thoda infrequently update karein
-  // Turbo mode ke liye alag se pre-calculated delays use karein
+  
+  
 
   timer = setTimeout(tick, delay);
 }

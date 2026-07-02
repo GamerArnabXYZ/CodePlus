@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <title>Auto Write Studio</title>
-<style>
+<link rel='stylesheet' href='/storage/0403-0201/Projects/Codeplus/styles.css'>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
 /* ── THEME VARS ── */
@@ -230,7 +229,7 @@ body.rec .tap-hint{display:none}
 <div class="intro" id="intro">
   <div class="intro-tag">CodeWithArnix &amp; GamerArnabXYZ</div>
   <div class="intro-title">AUTO WRITE<br>STUDIO</div>
-  <div class="intro-bar-wrap"><div class="intro-bar"></div></div>
+  <div class="intro-bar-wrap" role="progressbar" aria-label="Loading Progress"><div class="intro-bar"></div></div>
   <div class="intro-sub">PRO CAPTURE v3.0</div>
 </div>
 
@@ -238,10 +237,10 @@ body.rec .tap-hint{display:none}
 <canvas id="bgc"></canvas>
 
 <!-- PROGRESS -->
-<div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+<div class="prog-track" role="progressbar" aria-live="polite"><div class="prog-fill" id="pf"></div></div>
 
 <!-- CARD -->
-<div class="card" id="card">
+<div class="card" id="card" role="region" aria-label="Code typing area">
   <div class="scan"></div>
   <div class="hdr">
     <div class="dots">
@@ -260,25 +259,25 @@ body.rec .tap-hint{display:none}
 
 <!-- CONTROLS -->
 <div class="ctrls ui">
-  <button class="ctrl" onclick="toggle()" id="ctrlBtn">
+  <button class="ctrl" onclick="toggle()" id="ctrlBtn" role="button" tabindex="0" aria-label="Toggle Control">
     <i id="ctrlIco" class="fa-solid fa-play"></i>
     <span id="ctrlLbl">Start</span>
   </button>
-  <button class="ctrl ctrl-sq ui" onclick="togglePreview()" title="Preview">⊞</button>
+  <button class="ctrl ctrl-sq ui" onclick="togglePreview()" title="Preview" role="button" tabindex="0" aria-label="Preview">⊞</button>
 </div>
 
 <!-- TAP HINT -->
 <div class="tap-hint">TAP = Start &nbsp;·&nbsp; 2× = Preview &nbsp;·&nbsp; 3× = Clean</div>
 
 <!-- DONE -->
-<div class="done-wrap" id="dw">
+<div class="done-wrap" id="dw" role="status" aria-live="polite">
   <div class="done-badge">
     <div class="done-t">✦ COMPLETE ✦</div>
     <div class="done-s">CodeWithArnix &amp; GamerArnabXYZ</div>
   </div>
 </div>
 
-<script>
+<script src='/storage/0403-0201/Projects/Codeplus/scripts.js'></script>
 /* ── STORAGE KEYS ── */
 const LS_FILES = 'codepad_v1_files';
 const LS_SPD   = 'codepad_speed';

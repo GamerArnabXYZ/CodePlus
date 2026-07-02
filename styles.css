@@ -1,0 +1,67 @@
+/* Externalized CSS styles from auto.html */
+
+/* ── THEME VARS ── */
+:root {
+  --bg: #020204;
+  --accent: #00d2ff;
+  --accent2: #7b2fff;
+  --border: rgba(0, 210, 255, 0.28);
+  --glow: rgba(0, 210, 255, 0.15);
+  --card: rgba(10, 10, 18, 0.72);
+  --hdr: rgba(0, 0, 0, 0.55);
+  --particle: #00d2ff;
+  --cur: #00d2ff;
+}
+
+body.cyber {
+  --bg: #0a001a;
+  --accent: #bf5af2;
+  --accent2: #ff2d78;
+  --border: rgba(191, 90, 242, 0.3);
+  --glow: rgba(191, 90, 242, 0.15);
+  --particle: #bf5af2;
+  --cur: #bf5af2;
+}
+
+body.matrix {
+  --bg: #000a00;
+  --accent: #00ff88;
+  --accent2: #00cc55;
+  --border: rgba(0, 255, 136, 0.25);
+  --glow: rgba(0, 255, 136, 0.12);
+  --particle: #00ff88;
+  --cur: #00ff88;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  color: #fff;
+  transition: background 0.5s;
+}
+
+/* ── HEADER ── */
+.hdr {
+  height: 50px;
+  padding: 0 22px;
+  background: var(--hdr);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* Other styles migrated from inline */
